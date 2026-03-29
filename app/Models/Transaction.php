@@ -20,6 +20,7 @@ class Transaction extends Model
         'credit_card_invoice_id',
         'type',
         'description',
+        'fitid',
         'amount',
         'date',
         'due_date',

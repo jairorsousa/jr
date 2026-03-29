@@ -8,7 +8,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Services\BalanceService;
 use App\Services\OfxParserService;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -90,46 +90,77 @@ class ImportarOfx extends Component
     public function importTransactions(): void
     {
         $account = Account::findOrFail($this->accountId);
-        $imported = 0;
+
+        // 1. Collect all FITIDs to check duplicates in ONE query
+        $fitids = [];
+        foreach ($this->transactions as $index => $txn) {
+            if (!in_array($index, $this->removed)) {
+                $fitids[$index] = $txn['fitid'];
+            }
+        }
+
+        // 2. Find existing FITIDs in one query
+        $existingFitids = Transaction::where('account_id', $this->accountId)
+            ->where(function ($query) use ($fitids) {
+                foreach (array_chunk(array_values($fitids), 50) as $chunk) {
+                    $query->orWhere(function ($q) use ($chunk) {
+                        foreach ($chunk as $fitid) {
+                            $q->orWhere('fitid', $fitid);
+                        }
+                    });
+                }
+            })
+            ->pluck('fitid')
+            ->toArray();
+
+        $existingSet = array_flip($existingFitids);
+
+        // 3. Build batch insert
+        $toInsert = [];
         $skipped = 0;
+        $now = now();
 
         foreach ($this->transactions as $index => $txn) {
-            // Skip removed
             if (in_array($index, $this->removed)) {
                 continue;
             }
 
-            // Skip duplicates (check by fitid + account)
-            $exists = Transaction::where('account_id', $this->accountId)
-                ->where('description', 'LIKE', '%[' . $txn['fitid'] . ']%')
-                ->exists();
-
-            if ($exists) {
+            // Skip duplicates
+            if (isset($existingSet[$txn['fitid']])) {
                 $skipped++;
                 continue;
             }
 
             $categoryId = $this->categories[$index] ?? $this->getDefaultCategoryId($txn['type']);
 
-            Transaction::create([
+            $toInsert[] = [
+                'id' => (string) \Illuminate\Support\Str::uuid(),
                 'account_id' => $this->accountId,
                 'category_id' => $categoryId,
                 'type' => $txn['type'],
-                'description' => $txn['description'] . ' [' . $txn['fitid'] . ']',
+                'description' => $txn['description'],
+                'fitid' => $txn['fitid'],
                 'amount' => $txn['amount'],
                 'date' => $txn['date'],
                 'due_date' => $txn['date'],
                 'is_paid' => true,
                 'paid_at' => $txn['date'],
-            ]);
-
-            $imported++;
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
 
-        // Recalculate account balance
+        // 4. Insert in chunks inside a transaction
+        DB::transaction(function () use ($toInsert) {
+            foreach (array_chunk($toInsert, 100) as $chunk) {
+                Transaction::insert($chunk);
+            }
+        });
+
+        // 5. Recalculate account balance
         app(BalanceService::class)->recalculate($account);
 
-        $this->importedCount = $imported;
+        $this->importedCount = count($toInsert);
         $this->skippedCount = $skipped;
         $this->showResult = true;
         $this->parsed = false;
@@ -150,7 +181,6 @@ class ImportarOfx extends Component
 
         // Keyword -> category mapping for auto-detection
         $keywordMap = [
-            // Expense keywords
             'uber' => 'Transporte',
             '99' => 'Transporte',
             'posto' => 'Transporte',
@@ -201,7 +231,6 @@ class ImportarOfx extends Component
             'imposto' => 'Impostos',
             'taxa' => 'Impostos',
             'tributo' => 'Impostos',
-            // Income keywords
             'salario' => 'Salario',
             'pagamento' => 'Salario',
             'deposito' => 'Salario',
@@ -230,7 +259,6 @@ class ImportarOfx extends Component
                 }
             }
 
-            // Fallback to "Outros"
             if (!$assignedCategory) {
                 $assignedCategory = $this->getDefaultCategoryId($txn['type']);
             }
@@ -271,7 +299,6 @@ class ImportarOfx extends Component
         $expenseCategories = Category::where('type', TransactionType::Expense)->orderBy('name')->get();
         $incomeCategories = Category::where('type', TransactionType::Income)->orderBy('name')->get();
 
-        // Split active transactions into income/expense for the view
         $incomeTransactions = [];
         $expenseTransactions = [];
 
