@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foxbit Design System — Referência</title>
+<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     FOXBIT DESIGN TOKENS
+     Extraídos da plataforma app.foxbit.com.br
+     ============================================ */
+  :root {
+    /* === CORES PRIMÁRIAS === */
+    --colors-primary-g100: #fff0e0;
+    --colors-primary-g500: #ff6f00;
+    --colors-primary-g600: #e56300;
+
+    /* === CORES MONOCROMÁTICAS === */
+    --colors-monochromatic-white: #ffffff;
+    --colors-monochromatic-black: #212427;
+    --colors-monochromatic-g50: #f5f6f7;
+    --colors-monochromatic-g100: #ecedef;
+    --colors-monochromatic-g200: #d5d7da;
+    --colors-monochromatic-g300: #b2b7bb;
+    --colors-monochromatic-g600: #8d959d;
+    --colors-monochromatic-g900: #212529;
+
+    /* === CORES SISTEMA === */
+    --colors-system-success: #1cc97d;
+    --colors-system-success-bg: #e8f3ea;
+    --colors-system-error: #ff4747;
+    --colors-system-error-light: #e43b3b;
+    --colors-system-up: #15a96f;
+    --colors-system-down: #e43b3b;
+
+    /* === CORES CUSTOM === */
+    --colors-custom-background1: #ffffff;
+    --colors-custom-always-white: #ffffff;
+
+    /* === TIPOGRAFIA === */
+    --font-family: 'Reddit Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-xxs: 0.625rem;   /* 10px */
+    --font-size-xs: 0.875rem;    /* 14px */
+    --font-size-sm: 1rem;        /* 16px */
+    --font-size-md: 1.125rem;    /* 18px */
+    --font-size-lg: 1.25rem;     /* 20px */
+    --font-size-xl: 1.5rem;      /* 24px */
+    --font-size-xxl: 2rem;       /* 32px */
+
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --font-line-height-sm: 1.2;
+    --font-line-height-md: 1.4;
+    --font-line-height-lg: 1.6;
+
+    /* === ESPAÇAMENTOS === */
+    --spacings-xxxs: 0.25rem;    /* 4px */
+    --spacings-xxs: 0.5rem;      /* 8px */
+    --spacings-xs: 0.75rem;      /* 12px */
+    --spacings-sm: 1rem;         /* 16px */
+    --spacings-md: 1.25rem;      /* 20px */
+    --spacings-lg: 1.5rem;       /* 24px */
+    --spacings-xl: 2rem;         /* 32px */
+    --spacings-xxl: 2.5rem;      /* 40px */
+
+    /* === BORDAS === */
+    --borders-radius-xs: 4px;
+    --borders-radius-sm: 8px;
+    --borders-radius-md: 12px;
+    --borders-radius-lg: 16px;
+    --borders-radius-xl: 20px;
+    --borders-radius-xxl: 999px;
+
+    /* === SOMBRAS === */
+    --shadow-dropdown: 0 4px 20px 0 hsla(0,0%,54%,.16), 0 4px 20px 0 rgba(0,0,0,.1);
+    --shadow-card: 0 2px 8px rgba(0,0,0,.06);
+    --shadow-elevated: 0 8px 32px rgba(0,0,0,.12);
+
+    /* === Z-INDEX === */
+    --z-index-dropdown: 100;
+    --z-index-modal: 1000;
+  }
+
+  /* === DARK THEME TOKENS === */
+  [data-theme="dark"] {
+    --colors-monochromatic-white: #1a1d21;
+    --colors-monochromatic-black: #f5f6f7;
+    --colors-monochromatic-g50: #22262b;
+    --colors-monochromatic-g100: #2c3138;
+    --colors-monochromatic-g200: #3a4049;
+    --colors-monochromatic-g900: #f5f6f7;
+    --colors-custom-background1: #1a1d21;
+    --shadow-card: 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  /* ============================================
+     BASE STYLES
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-family);
+    background: #f8f9fa;
+    color: var(--colors-monochromatic-g900);
+    line-height: var(--font-line-height-md);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================
+     LAYOUT DO DOCUMENTO
+     ============================================ */
+  .ds-header {
+    background: var(--colors-monochromatic-g900);
+    color: white;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ds-header::after {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: var(--colors-primary-g500);
+    opacity: .12;
+  }
+  .ds-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .ds-header h1 span { color: var(--colors-primary-g500); }
+  .ds-header p {
+    margin-top: 8px;
+    font-size: var(--font-size-sm);
+    color: var(--colors-monochromatic-g300);
+    max-width: 520px;
+  }
+
+  .ds-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .ds-section {
+    margin-bottom: 56px;
+  }
+  .ds-section-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--colors-monochromatic-g900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ds-section-title::before {
+    content: '';
+    width: 4px; height: 24px;
+    background: var(--colors-primary-g500);
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .ds-section-desc {
+    font-size: var(--font-size-xs);
+    color: var(--colors-monochromatic-g600);
+    margin-bottom: 24px;
+  }
+
+  /* ============================================
+     COLOR SWATCHES
+     ============================================ */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .color-swatch {
+    border-radius: var(--borders-radius-md);
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--shadow-card);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .color-swatch:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+  }
+  .color-swatch-preview {
+    height: 72px;
+    position: relative;
+  }
+  .color-swatch-info {
+    padding: 10px 12px;
+  }
+  .color-swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--colors-monochromatic-g900);
+  }
+  .color-swatch-value {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--colors-monochromatic-g600);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ============================================
+     TYPOGRAPHY SHOWCASE
+     ============================================ */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--colors-monochromatic-g100);
+    gap: 24px;
+  }
+  .type-label {
+    min-width: 120px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--colors-primary-g500);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .type-meta {
+    min-width: 140px;
+    font-size: 11px;
+    color: var(--colors-monochromatic-g600);
+    font-family: monospace;
+  }
+
+  /* ============================================
+     SPACING VISUAL
+     ============================================ */
+  .spacing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+  }
+  .spacing-item {
+    text-align: center;
+  }
+  .spacing-box {
+    background: var(--colors-primary-g500);
+    border-radius: 4px;
+    opacity: .25;
+    margin: 0 auto 6px;
+  }
+  .spacing-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--colors-monochromatic-g900);
+  }
+  .spacing-value {
+    font-size: 10px;
+    color: var(--colors-monochromatic-g600);
+  }
+
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+  .radius-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .radius-item {
+    text-align: center;
+  }
+  .radius-box {
+    width: 64px; height: 64px;
+    background: var(--colors-monochromatic-g100);
+    border: 2px solid var(--colors-primary-g500);
+    margin-bottom: 6px;
+  }
+  .radius-label { font-size: 11px; font-weight: 600; }
+  .radius-value { font-size: 10px; color: var(--colors-monochromatic-g600); }
+
+  /* ============================================
+     BUTTONS (Foxbit)
+     ============================================ */
+  .btn-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .fx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    border: none;
+    cursor: pointer;
+    border-radius: var(--borders-radius-xxl);
+    padding: 0 var(--spacings-lg);
+    height: 44px;
+    transition: background .2s ease, transform .1s ease, box-shadow .2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .fx-btn:active { transform: scale(.97); }
+
+  /* Primary */
+  .fx-btn--primary {
+    background: var(--colors-primary-g500);
+    color: var(--colors-custom-always-white);
+  }
+  .fx-btn--primary:hover { background: var(--colors-primary-g600); }
+
+  /* Standard (outline) */
+  .fx-btn--standard {
+    background: transparent;
+    color: var(--colors-monochromatic-g900);
+    border: 1px solid var(--colors-monochromatic-g200);
+  }
+  .fx-btn--standard:hover {
+    background: var(--colors-monochromatic-g50);
+    border-color: var(--colors-monochromatic-g300);
+  }
+
+  /* Monochromatic */
+  .fx-btn--mono {
+    background: var(--colors-monochromatic-g100);
+    color: var(--colors-monochromatic-g900);
+  }
+  .fx-btn--mono:hover { background: var(--colors-monochromatic-g200); }
+
+  /* Default / Text */
+  .fx-btn--text {
+    background: transparent;
+    color: var(--colors-monochromatic-g900);
+    padding: 0 var(--spacings-sm);
+  }
+  .fx-btn--text:hover { background: var(--colors-monochromatic-g50); }
+
+  /* Small */
+  .fx-btn--sm { height: 36px; padding: 0 var(--spacings-sm); font-size: 13px; }
+
+  /* Icon-only */
+  .fx-btn--icon {
+    width: 40px; height: 40px;
+    padding: 0;
+    border-radius: var(--borders-radius-xxl);
+    background: transparent;
+  }
+  .fx-btn--icon:hover { background: var(--colors-monochromatic-g100); }
+
+  /* ============================================
+     BADGE / TAG
+     ============================================ */
+  .fx-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--borders-radius-xxl);
+  }
+  .fx-badge--up { color: var(--colors-system-up); background: #e8f8f0; }
+  .fx-badge--down { color: var(--colors-system-down); background: #fdeaea; }
+  .fx-badge--neutral { color: var(--colors-monochromatic-g600); background: var(--colors-monochromatic-g100); }
+
+  /* ============================================
+     CARD
+     ============================================ */
+  .fx-card {
+    background: white;
+    border-radius: var(--borders-radius-lg);
+    padding: var(--spacings-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--colors-monochromatic-g100);
+  }
+  .fx-card-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacings-xs);
+  }
+
+  /* ============================================
+     TABLE (Wallet Style)
+     ============================================ */
+  .fx-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--borders-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .fx-table th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--colors-monochromatic-g600);
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--colors-monochromatic-g100);
+    background: var(--colors-monochromatic-g50);
+  }
+  .fx-table td {
+    font-size: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--colors-monochromatic-g100);
+    color: var(--colors-monochromatic-g900);
+  }
+  .fx-table tr:last-child td { border-bottom: none; }
+  .fx-table tr:hover td { background: var(--colors-monochromatic-g50); }
+  .fx-table .coin-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+  }
+  .fx-table .coin-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--colors-monochromatic-g100);
+  }
+
+  /* ============================================
+     INPUT — SEARCH (pill, carteira)
+     ============================================ */
+  .fx-input-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--colors-monochromatic-g200);
+    border-radius: var(--borders-radius-xxl);
+    padding: 0 14px;
+    height: 44px;
+    gap: 8px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    min-width: 260px;
+  }
+  .fx-input-wrap:focus-within {
+    border-color: var(--colors-primary-g500);
+    box-shadow: 0 0 0 3px rgba(255,111,0,.12);
+  }
+  .fx-input-wrap svg { flex-shrink: 0; color: var(--colors-monochromatic-g300); }
+  .fx-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    width: 100%;
+    color: var(--colors-monochromatic-g900);
+  }
+  .fx-input::placeholder { color: var(--colors-monochromatic-g300); }
+
+  /* ============================================
+     INPUT — FORM (login/register style)
+     ============================================ */
+  .fx-form-group {
+    margin-bottom: var(--spacings-lg);
+    width: 100%;
+  }
+  .fx-form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--colors-monochromatic-g600);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .fx-form-field {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--colors-monochromatic-g200);
+    border-radius: var(--borders-radius-xxl);
+    padding: 0 16px;
+    height: 48px;
+    gap: 10px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+    width: 100%;
+  }
+  .fx-form-field:hover {
+    border-color: var(--colors-monochromatic-g300);
+  }
+  .fx-form-field:focus-within {
+    border-color: var(--colors-primary-g500);
+    box-shadow: 0 0 0 3px rgba(255,111,0,.1);
+  }
+  .fx-form-field .fx-field-icon {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    color: var(--colors-monochromatic-g300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fx-form-field:focus-within .fx-field-icon {
+    color: var(--colors-primary-g500);
+  }
+  .fx-form-field input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    width: 100%;
+    color: var(--colors-monochromatic-g900);
+    height: 100%;
+  }
+  .fx-form-field input::placeholder {
+    color: var(--colors-monochromatic-g300);
+  }
+  .fx-form-field .fx-field-status {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fx-form-field .fx-field-status--success { color: var(--colors-system-success); }
+  .fx-form-field .fx-field-status--error { color: var(--colors-system-error); }
+
+  /* States */
+  .fx-form-field--success {
+    border-color: var(--colors-system-success);
+  }
+  .fx-form-field--error {
+    border-color: var(--colors-system-error);
+  }
+  .fx-form-field--disabled {
+    background: var(--colors-monochromatic-g50);
+    opacity: .6;
+    pointer-events: none;
+  }
+
+  /* Helper / Error text */
+  .fx-form-helper {
+    font-size: 12px;
+    margin-top: 6px;
+    padding-left: 16px;
+    color: var(--colors-monochromatic-g600);
+  }
+  .fx-form-helper--error {
+    color: var(--colors-system-error);
+    font-weight: 500;
+  }
+
+  /* Link under field (Foxbit pattern) */
+  .fx-form-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--colors-primary-g500);
+    text-decoration: none;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: color .15s ease;
+  }
+  .fx-form-link:hover { color: var(--colors-primary-g600); text-decoration: underline; }
+
+  /* Login form container */
+  .fx-login-card {
+    background: white;
+    border-radius: var(--borders-radius-lg);
+    padding: 40px 32px;
+    box-shadow: var(--shadow-elevated);
+    max-width: 400px;
+    width: 100%;
+  }
+  .fx-login-card .fx-login-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .fx-login-card h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--colors-monochromatic-g900);
+    margin-bottom: var(--spacings-lg);
+  }
+  .fx-login-footer {
+    text-align: center;
+    margin-top: var(--spacings-lg);
+    font-size: var(--font-size-xs);
+    color: var(--colors-monochromatic-g600);
+  }
+
+  /* Alert/Flash message */
+  .fx-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--borders-radius-md);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .fx-alert--error {
+    background: #fdeaea;
+    color: var(--colors-system-error);
+    border: 1px solid rgba(228,59,59,.2);
+  }
+  .fx-alert--success {
+    background: var(--colors-system-success-bg);
+    color: var(--colors-system-success);
+    border: 1px solid rgba(28,201,125,.2);
+  }
+  .fx-alert--info {
+    background: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid rgba(26,115,232,.15);
+  }
+  .fx-alert svg { flex-shrink: 0; }
+  .fx-alert-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: .6;
+    padding: 4px;
+  }
+  .fx-alert-close:hover { opacity: 1; }
+
+  /* ============================================
+     CATEGORY PILLS
+     ============================================ */
+  .fx-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .fx-pill {
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: var(--borders-radius-xxl);
+    border: 1px solid var(--colors-monochromatic-g200);
+    background: white;
+    color: var(--colors-monochromatic-g900);
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .fx-pill:hover { border-color: var(--colors-primary-g500); color: var(--colors-primary-g500); }
+  .fx-pill--active {
+    background: var(--colors-primary-g500);
+    color: white;
+    border-color: var(--colors-primary-g500);
+  }
+
+  /* ============================================
+     NOTIFICATION BADGE
+     ============================================ */
+  .fx-notif-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: var(--colors-system-error);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ============================================
+     COLLAPSIBLE / ACCORDION
+     ============================================ */
+  .fx-collapsible {
+    background: white;
+    border-radius: var(--borders-radius-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--colors-monochromatic-g100);
+    overflow: hidden;
+  }
+  .fx-collapsible summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacings-sm) var(--spacings-lg);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    list-style: none;
+    user-select: none;
+  }
+  .fx-collapsible summary::-webkit-details-marker { display: none; }
+  .fx-collapsible summary .chevron {
+    transition: transform .2s ease;
+    color: var(--colors-monochromatic-g600);
+  }
+  .fx-collapsible[open] summary .chevron { transform: rotate(180deg); }
+  .fx-collapsible-content {
+    padding: 0 var(--spacings-lg) var(--spacings-lg);
+  }
+
+  /* ============================================
+     MENU ITEM (Sidebar)
+     ============================================ */
+  .fx-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--borders-radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--colors-monochromatic-g900);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .12s ease;
+  }
+  .fx-menu-item:hover { background: var(--colors-monochromatic-g100); }
+  .fx-menu-item--active {
+    color: var(--colors-primary-g500);
+    background: var(--colors-primary-g100);
+  }
+  .fx-menu-item--active:hover { background: var(--colors-primary-g100); }
+  .fx-menu-icon {
+    width: 20px; height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+  }
+
+  /* ============================================
+     USER AVATAR BUTTON
+     ============================================ */
+  .fx-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacings-xs);
+    border: none;
+    border-radius: var(--borders-radius-xxl);
+    background: transparent;
+    padding: var(--spacings-xxs);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--colors-monochromatic-g900);
+    cursor: pointer;
+    text-transform: capitalize;
+    font-family: var(--font-family);
+    transition: background .2s ease;
+  }
+  .fx-user-btn:hover { background: var(--colors-monochromatic-g100); }
+  .fx-user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--colors-monochromatic-g50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s ease;
+  }
+  .fx-user-btn:hover .fx-user-avatar { background: var(--colors-primary-g100); }
+
+  /* ============================================
+     HIGHLIGHT CARD
+     ============================================ */
+  .fx-highlight-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: var(--borders-radius-md);
+    cursor: pointer;
+    transition: background .12s ease;
+    border: 1px solid transparent;
+  }
+  .fx-highlight-card:hover {
+    background: var(--colors-monochromatic-g50);
+    border-color: var(--colors-monochromatic-g100);
+  }
+  .fx-highlight-card img { width: 32px; height: 32px; border-radius: 50%; }
+
+  /* ============================================
+     PROGRESS BAR (VIP)
+     ============================================ */
+  .fx-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--colors-monochromatic-g100);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .fx-progress-bar {
+    height: 100%;
+    background: var(--colors-primary-g500);
+    border-radius: 4px;
+    transition: width .4s ease;
+  }
+
+  /* ============================================
+     TOGGLE SWITCH
+     ============================================ */
+  .fx-toggle {
+    position: relative;
+    width: 50px; height: 24px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--colors-monochromatic-g300);
+    border-radius: 12px;
+    cursor: pointer;
+    outline: none;
+    transition: background .2s ease;
+  }
+  .fx-toggle::before {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    top: 2px; left: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: transform .2s ease;
+  }
+  .fx-toggle:checked { background: var(--colors-primary-g500); }
+  .fx-toggle:checked::before { transform: translateX(26px); }
+
+  /* ============================================
+     DIVIDER
+     ============================================ */
+  .fx-divider {
+    border: none;
+    border-top: 1px solid var(--colors-monochromatic-g100);
+    margin: 16px 0;
+  }
+
+  /* ============================================
+     DEMO LAYOUT SECTIONS
+     ============================================ */
+  .demo-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .demo-col { flex: 1; min-width: 280px; }
+  .code-hint {
+    background: var(--colors-monochromatic-g50);
+    border: 1px solid var(--colors-monochromatic-g100);
+    border-radius: var(--borders-radius-sm);
+    padding: 12px 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--colors-monochromatic-g600);
+    overflow-x: auto;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .sub-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+    color: var(--colors-monochromatic-g600);
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="ds-header">
+  <h1><span>Foxbit</span> Design System</h1>
+  <p>Tokens de design, componentes e padrões extraídos da plataforma Foxbit (app.foxbit.com.br) para reutilização.</p>
+</div>
+
+<div class="ds-container">
+
+  <!-- ============================
+       1. CORES
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Cores</h2>
+    <p class="ds-section-desc">Paleta completa extraída das CSS variables da Foxbit.</p>
+
+    <div class="sub-label">Primária</div>
+    <div class="color-grid">
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#fff0e0"></div><div class="color-swatch-info"><div class="color-swatch-name">Primary G100</div><div class="color-swatch-value">#fff0e0</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#ff6f00"></div><div class="color-swatch-info"><div class="color-swatch-name">Primary G500</div><div class="color-swatch-value">#ff6f00</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#e56300"></div><div class="color-swatch-info"><div class="color-swatch-name">Primary G600</div><div class="color-swatch-value">#e56300</div></div></div>
+    </div>
+
+    <div class="sub-label">Monocromáticas</div>
+    <div class="color-grid">
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#ffffff; border-bottom:1px solid #eee"></div><div class="color-swatch-info"><div class="color-swatch-name">White</div><div class="color-swatch-value">#ffffff</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#f5f6f7"></div><div class="color-swatch-info"><div class="color-swatch-name">G50</div><div class="color-swatch-value">#f5f6f7</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#ecedef"></div><div class="color-swatch-info"><div class="color-swatch-name">G100</div><div class="color-swatch-value">#ecedef</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#d5d7da"></div><div class="color-swatch-info"><div class="color-swatch-name">G200</div><div class="color-swatch-value">#d5d7da</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#b2b7bb"></div><div class="color-swatch-info"><div class="color-swatch-name">G300</div><div class="color-swatch-value">#b2b7bb</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#8d959d"></div><div class="color-swatch-info"><div class="color-swatch-name">G600</div><div class="color-swatch-value">#8d959d</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#212529"></div><div class="color-swatch-info"><div class="color-swatch-name">G900</div><div class="color-swatch-value">#212529</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#212427"></div><div class="color-swatch-info"><div class="color-swatch-name">Black</div><div class="color-swatch-value">#212427</div></div></div>
+    </div>
+
+    <div class="sub-label">Sistema</div>
+    <div class="color-grid">
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#15a96f"></div><div class="color-swatch-info"><div class="color-swatch-name">Up / Success</div><div class="color-swatch-value">#15a96f</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#1cc97d"></div><div class="color-swatch-info"><div class="color-swatch-name">Success Light</div><div class="color-swatch-value">#1cc97d</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#e8f3ea"></div><div class="color-swatch-info"><div class="color-swatch-name">Success BG</div><div class="color-swatch-value">#e8f3ea</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#e43b3b"></div><div class="color-swatch-info"><div class="color-swatch-name">Down / Error</div><div class="color-swatch-value">#e43b3b</div></div></div>
+      <div class="color-swatch"><div class="color-swatch-preview" style="background:#ff4747"></div><div class="color-swatch-info"><div class="color-swatch-name">Error / Danger</div><div class="color-swatch-value">#ff4747</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============================
+       2. TIPOGRAFIA
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Tipografia</h2>
+    <p class="ds-section-desc">Família: <strong>Reddit Sans</strong> (antigamente usavam Nunito). Fallback: system sans-serif.</p>
+
+    <div class="fx-card">
+      <div class="type-row">
+        <div class="type-label">XXL / H1</div>
+        <div class="type-meta">32px · Bold (700)</div>
+        <div style="font-size:2rem; font-weight:700; letter-spacing:-.02em">Saldo Total</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">XL / H2</div>
+        <div class="type-meta">24px · Bold (700)</div>
+        <div style="font-size:1.5rem; font-weight:700">Início</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">LG / H3</div>
+        <div class="type-meta">20px · SemiBold (600)</div>
+        <div style="font-size:1.25rem; font-weight:600">Carteira</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">SM / Body</div>
+        <div class="type-meta">16px · Medium (500)</div>
+        <div style="font-size:1rem; font-weight:500">Depositar reais via Pix</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">XS / Small</div>
+        <div class="type-meta">14px · Regular (400)</div>
+        <div style="font-size:.875rem; font-weight:400">Volume negociado em 30 dias</div>
+      </div>
+      <div class="type-row" style="border:none">
+        <div class="type-label">XXS / Caption</div>
+        <div class="type-meta">10-12px · SemiBold (600)</div>
+        <div style="font-size:.75rem; font-weight:600; color:var(--colors-monochromatic-g600)">INICIANTE · 0.25% MAKER</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       3. ESPAÇAMENTOS
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Espaçamentos</h2>
+    <p class="ds-section-desc">Escala de 4px baseada em múltiplos de 4.</p>
+    <div class="spacing-grid">
+      <div class="spacing-item"><div class="spacing-box" style="width:4px;height:4px"></div><div class="spacing-label">xxxs</div><div class="spacing-value">4px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:8px;height:8px"></div><div class="spacing-label">xxs</div><div class="spacing-value">8px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:12px;height:12px"></div><div class="spacing-label">xs</div><div class="spacing-value">12px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:16px;height:16px"></div><div class="spacing-label">sm</div><div class="spacing-value">16px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:20px;height:20px"></div><div class="spacing-label">md</div><div class="spacing-value">20px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:24px;height:24px"></div><div class="spacing-label">lg</div><div class="spacing-value">24px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:32px;height:32px"></div><div class="spacing-label">xl</div><div class="spacing-value">32px</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width:40px;height:40px"></div><div class="spacing-label">xxl</div><div class="spacing-value">40px</div></div>
+    </div>
+  </section>
+
+  <!-- ============================
+       4. BORDER RADIUS
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Border Radius</h2>
+    <p class="ds-section-desc">De cantos retos a totalmente arredondados (pills).</p>
+    <div class="radius-grid">
+      <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="radius-label">xs</div><div class="radius-value">4px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="radius-label">sm</div><div class="radius-value">8px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="radius-label">md</div><div class="radius-value">12px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:16px"></div><div class="radius-label">lg</div><div class="radius-value">16px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:20px"></div><div class="radius-label">xl</div><div class="radius-value">20px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:999px"></div><div class="radius-label">xxl (pill)</div><div class="radius-value">999px</div></div>
+    </div>
+  </section>
+
+  <!-- ============================
+       5. BOTÕES
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Botões</h2>
+    <p class="ds-section-desc">Padrão pill (border-radius: 999px) com 4 variantes e 2 tamanhos.</p>
+
+    <div class="sub-label">Variantes</div>
+    <div class="btn-grid">
+      <button class="fx-btn fx-btn--primary">Depositar reais</button>
+      <button class="fx-btn fx-btn--standard">Depositar</button>
+      <button class="fx-btn fx-btn--mono">Sacar</button>
+      <button class="fx-btn fx-btn--text">Marcar todas como lidas</button>
+    </div>
+
+    <div class="sub-label">Tamanhos</div>
+    <div class="btn-grid">
+      <button class="fx-btn fx-btn--primary">Default (44px)</button>
+      <button class="fx-btn fx-btn--primary fx-btn--sm">Small (36px)</button>
+    </div>
+
+    <div class="sub-label">Com ícone</div>
+    <div class="btn-grid">
+      <button class="fx-btn fx-btn--primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 20H3m9-5.5 2-2m-4 0 2 2m0-5v5m5.99 1.5a7.5 7.5 0 1 0-11.98 0"/></svg>
+        Depositar reais
+      </button>
+      <button class="fx-btn fx-btn--standard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+        Comprar | Vender
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================
+       6. BADGES DE VARIAÇÃO
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Badges de Variação</h2>
+    <p class="ds-section-desc">Usados na tabela de carteira para indicar variação 24h.</p>
+    <div class="btn-grid">
+      <span class="fx-badge fx-badge--up">▲ 4,22%</span>
+      <span class="fx-badge fx-badge--down">▼ 3,46%</span>
+      <span class="fx-badge fx-badge--neutral">0,00%</span>
+      <span class="fx-notif-badge">10</span>
+    </div>
+  </section>
+
+  <!-- ============================
+       7. INPUTS DE FORMULÁRIO (Login Style)
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Inputs de Formulário</h2>
+    <p class="ds-section-desc">Campos de formulário extraídos da página de login. Formato pill (border-radius: 999px), com ícone à esquerda e ícone de status à direita.</p>
+
+    <div class="demo-row">
+      <div class="demo-col">
+        <div class="sub-label">Input com ícone (padrão)</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6m-2 0l-8 5-8-5h16m0 12H4V8l8 5 8-5v10z"/></svg>
+            </span>
+            <input type="email" placeholder="E-mail" autocomplete="email">
+            <span class="fx-field-status"></span>
+          </div>
+        </div>
+
+        <div class="sub-label">Input com validação sucesso</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field fx-form-field--success">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6m-2 0l-8 5-8-5h16m0 12H4V8l8 5 8-5v10z"/></svg>
+            </span>
+            <input type="email" value="jairo@exemplo.com">
+            <span class="fx-field-status fx-field-status--success">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="sub-label">Input senha</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M12.65 10A5.99 5.99 0 007 6c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.99 5.99 0 005.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+            </span>
+            <input type="password" placeholder="Senha" value="••••••••">
+            <span class="fx-field-status fx-field-status--success">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="sub-label">Input com erro</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field fx-form-field--error">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6m-2 0l-8 5-8-5h16m0 12H4V8l8 5 8-5v10z"/></svg>
+            </span>
+            <input type="email" value="email-invalido">
+            <span class="fx-field-status fx-field-status--error">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </span>
+          </div>
+          <div class="fx-form-helper fx-form-helper--error">E-mail inválido. Verifique e tente novamente.</div>
+        </div>
+
+        <div class="sub-label">Input código 2FA</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 19c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 1c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12-8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </span>
+            <input type="text" placeholder="Código 2FA" maxlength="6" pattern="[0-9]+" inputmode="numeric">
+            <span class="fx-field-status"></span>
+          </div>
+          <a class="fx-form-link" href="#">
+            Desativar 2FA
+            <svg viewBox="0 0 17 17" width="14" height="14"><circle stroke="#ff6f00" stroke-linecap="round" stroke-linejoin="round" cx="8" cy="8" r="6" fill="none"/><line x1="7.3" y1="10.3" x2="8.9" y2="10.3" stroke="#ff6f00" stroke-linecap="round"/><polyline stroke="#ff6f00" stroke-linecap="round" stroke-linejoin="round" points="8.1 10.3 8.1 7.5 7.3 7.5"/><circle cx="8" cy="5.5" r=".17" stroke="#ff6f00"/></svg>
+          </a>
+        </div>
+
+        <div class="sub-label">Input desabilitado</div>
+        <div class="fx-form-group">
+          <div class="fx-form-field fx-form-field--disabled">
+            <span class="fx-field-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6m-2 0l-8 5-8-5h16m0 12H4V8l8 5 8-5v10z"/></svg>
+            </span>
+            <input type="email" value="desabilitado@email.com" disabled>
+            <span class="fx-field-status"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-col">
+        <div class="sub-label">Formulário Login (composição completa)</div>
+        <div class="fx-login-card">
+          <div class="fx-login-logo">
+            <svg width="28" height="28" viewBox="0 0 118 118" fill="none"><circle cx="59" cy="59" r="59" fill="#ff6f00"/><path d="M65 5.5h1.7c1.1.1 2.3.3 3.4.5a50.6 50.6 0 0124.2 11.9 56.6 56.6 0 0115.5 22 52 52 0 012.3 30 53.2 53.2 0 01-15.4 28.2 55.4 55.4 0 01-29.6 14.4h-1.9c-.2 0-.4 0-.5-.2s-.2-.3-.2-.5v-2.3a.6.6 0 01.6-.6h.5l.7-.2a52 52 0 0027.8-13.3 50 50 0 0014.4-26.3 47.6 47.6 0 00-2.2-27.9 53.2 53.2 0 00-14.6-20.4 47.6 47.6 0 00-22.5-11l-4.1-.4a.7.7 0 01-.6-.6V6.4a.7.7 0 01.7-.7z" fill="#fff"/></svg>
+          </div>
+          <h2>Acesse sua conta</h2>
+
+          <div class="fx-form-group">
+            <div class="fx-form-field">
+              <span class="fx-field-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6m-2 0l-8 5-8-5h16m0 12H4V8l8 5 8-5v10z"/></svg>
+              </span>
+              <input type="email" placeholder="E-mail">
+              <span class="fx-field-status"></span>
+            </div>
+          </div>
+
+          <div class="fx-form-group">
+            <div class="fx-form-field">
+              <span class="fx-field-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M12.65 10A5.99 5.99 0 007 6c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.99 5.99 0 005.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+              </span>
+              <input type="password" placeholder="Senha">
+              <span class="fx-field-status"></span>
+            </div>
+          </div>
+
+          <div class="fx-form-group">
+            <div class="fx-form-field">
+              <span class="fx-field-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 19c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 1c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12-8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              </span>
+              <input type="text" placeholder="Código 2FA" maxlength="6" inputmode="numeric">
+              <span class="fx-field-status"></span>
+            </div>
+            <a class="fx-form-link" href="#">Desativar 2FA</a>
+          </div>
+
+          <button class="fx-btn fx-btn--primary" style="width:100%; margin-top:8px">Entrar</button>
+
+          <div style="text-align:center; margin-top:16px">
+            <a class="fx-form-link" href="#">Esqueceu a senha?</a>
+          </div>
+
+          <div class="fx-login-footer">
+            Ainda não tem conta?
+            <button class="fx-btn fx-btn--standard fx-btn--sm" style="margin-left:8px">Cadastre-se</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-label" style="margin-top:32px">Alertas / Flash Messages</div>
+    <div style="display:flex; flex-direction:column; gap:12px; max-width:480px">
+      <div class="fx-alert fx-alert--error">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>Houve um problema ao realizar a consulta! Tente novamente.</span>
+        <button class="fx-alert-close">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="fx-alert fx-alert--success">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <span>Sua senha foi redefinida com sucesso!</span>
+        <button class="fx-alert-close">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="fx-alert fx-alert--info">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <span>Sua sessão expirou. Faça login novamente.</span>
+      </div>
+    </div>
+
+    <div class="sub-label" style="margin-top:32px">Input de Busca (Carteira)</div>
+    <div class="fx-input-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16" y2="16"/></svg>
+      <input class="fx-input" placeholder="Pesquisar" type="text">
+    </div>
+
+    <div class="code-hint" style="margin-top:24px">
+/* Anatomia do input Foxbit (login) */<br>
+.fx-form-field {<br>
+&nbsp;&nbsp;display: flex;<br>
+&nbsp;&nbsp;align-items: center;<br>
+&nbsp;&nbsp;background: white;<br>
+&nbsp;&nbsp;border: 1px solid var(--colors-mono-g200);<br>
+&nbsp;&nbsp;border-radius: 999px; /* pill */<br>
+&nbsp;&nbsp;padding: 0 16px;<br>
+&nbsp;&nbsp;height: 48px;<br>
+&nbsp;&nbsp;gap: 10px;<br>
+}<br><br>
+/* Estrutura HTML */<br>
+&lt;div class="fx-form-field"&gt;<br>
+&nbsp;&nbsp;&lt;span class="fx-field-icon"&gt;[SVG]&lt;/span&gt;<br>
+&nbsp;&nbsp;&lt;input type="email" placeholder="E-mail"&gt;<br>
+&nbsp;&nbsp;&lt;span class="fx-field-status fx-field-status--success"&gt;[SVG]&lt;/span&gt;<br>
+&lt;/div&gt;<br><br>
+/* Estados: fx-form-field--success | --error | --disabled */<br>
+/* Status icons: fx-field-status--success | --error */
+    </div>
+  </section>
+
+  <!-- ============================
+       8. CATEGORY PILLS
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Category Pills</h2>
+    <p class="ds-section-desc">Filtros de categoria usados na carteira e mercados.</p>
+    <div class="fx-pills">
+      <button class="fx-pill fx-pill--active">Todas</button>
+      <button class="fx-pill">Com saldo</button>
+      <button class="fx-pill">Cripto</button>
+      <button class="fx-pill">Stablecoin</button>
+      <button class="fx-pill">DeFi</button>
+      <button class="fx-pill">Memecoins</button>
+      <button class="fx-pill">Gamecoins</button>
+      <button class="fx-pill">NFT</button>
+    </div>
+  </section>
+
+  <!-- ============================
+       9. TABELA DA CARTEIRA
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Tabela da Carteira</h2>
+    <p class="ds-section-desc">Layout principal da página inicial com ativos, preço, saldo.</p>
+    <table class="fx-table">
+      <thead>
+        <tr>
+          <th style="width:25%">Ativo</th>
+          <th style="width:25%">Preço em R$</th>
+          <th style="width:25%">Saldo em aberto</th>
+          <th style="width:25%">Saldo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="coin-cell"><img class="coin-icon" src="https://statics.foxbit.com.br/icons/colored/btc.svg" alt="BTC"><span>Bitcoin</span></div></td>
+          <td>R$ 347.872 <span class="fx-badge fx-badge--down" style="margin-left:8px">▼ 3,46%</span></td>
+          <td>BTC 0,00000000</td>
+          <td>BTC 0,00000000<br><small style="color:var(--colors-monochromatic-g600)">~R$ 0,00</small></td>
+        </tr>
+        <tr>
+          <td><div class="coin-cell"><img class="coin-icon" src="https://statics.foxbit.com.br/icons/colored/eth.svg" alt="ETH"><span>Ethereum</span></div></td>
+          <td>R$ 10.437 <span class="fx-badge fx-badge--down" style="margin-left:8px">▼ 3,44%</span></td>
+          <td>ETH 0,00000000</td>
+          <td>ETH 0,00000000<br><small style="color:var(--colors-monochromatic-g600)">~R$ 0,00</small></td>
+        </tr>
+        <tr>
+          <td><div class="coin-cell"><img class="coin-icon" src="https://statics.foxbit.com.br/icons/colored/usdt.svg" alt="USDT"><span>Tether</span></div></td>
+          <td>R$ 5,2525 <span class="fx-badge fx-badge--up" style="margin-left:8px">▲ 0,13%</span></td>
+          <td>USDT 0,00000</td>
+          <td>USDT 0,00003<br><small style="color:var(--colors-monochromatic-g600)">~R$ 0,00</small></td>
+        </tr>
+        <tr>
+          <td><div class="coin-cell"><img class="coin-icon" src="https://statics.foxbit.com.br/icons/colored/sol.svg" alt="SOL"><span>Solana</span></div></td>
+          <td>R$ 435,1 <span class="fx-badge fx-badge--down" style="margin-left:8px">▼ 4,18%</span></td>
+          <td>SOL 0,00000000</td>
+          <td>SOL 0,00000000<br><small style="color:var(--colors-monochromatic-g600)">~R$ 0,00</small></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================
+       10. COLLAPSIBLE / ACCORDION
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Collapsible / Accordion</h2>
+    <p class="ds-section-desc">Seções colapsáveis usadas em Carteira, Destaques, VIP.</p>
+    <details class="fx-collapsible" open>
+      <summary>
+        Carteira
+        <span class="chevron">▼</span>
+      </summary>
+      <div class="fx-collapsible-content">
+        <p style="color:var(--colors-monochromatic-g600); font-size:14px">Conteúdo colapsável — tabela de ativos, filtros de categoria, etc.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================
+       11. MENU LATERAL
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Menu Lateral (Sidebar)</h2>
+    <p class="ds-section-desc">Itens de navegação com ícone + texto.</p>
+    <div style="max-width:260px; background:white; border-radius:16px; padding:8px; box-shadow:var(--shadow-card); border:1px solid var(--colors-monochromatic-g100)">
+      <a class="fx-menu-item fx-menu-item--active" href="#">
+        <span class="fx-menu-icon">🏠</span> Início
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">↕️</span> Depositar | Sacar
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">🔄</span> Conversão
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">↔️</span> Comprar | Vender
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">🌐</span> Explorar
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">📊</span> Livro de Ofertas
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">📅</span> Meu Histórico
+      </a>
+      <hr class="fx-divider">
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">💳</span> Foxbit Card
+      </a>
+      <a class="fx-menu-item" href="#">
+        <span class="fx-menu-icon">👥</span> Indique Amigos
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================
+       12. USER BUTTON
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">User Button</h2>
+    <p class="ds-section-desc">Botão de usuário no header com avatar e dropdown.</p>
+    <div class="btn-grid">
+      <button class="fx-user-btn">
+        <div class="fx-user-avatar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8d959d" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="7" r="2.5"/><path d="M13.4 15c-.3-1.5-2.2-2.7-4.4-2.7s-4.1 1.2-4.4 2.7"/><circle cx="9" cy="9" r="7.5"/></svg>
+        </div>
+        jairo
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 10l4 4 4-4"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================
+       13. TOGGLE SWITCH
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Toggle Switch</h2>
+    <p class="ds-section-desc">Usado para modo escuro e outras configurações binárias.</p>
+    <div class="btn-grid" style="align-items:center">
+      <label style="display:flex; align-items:center; gap:12px; font-size:14px; font-weight:500; cursor:pointer">
+        <input type="checkbox" class="fx-toggle">
+        Modo escuro
+      </label>
+      <label style="display:flex; align-items:center; gap:12px; font-size:14px; font-weight:500; cursor:pointer">
+        <input type="checkbox" class="fx-toggle" checked>
+        Ativo
+      </label>
+    </div>
+  </section>
+
+  <!-- ============================
+       14. PROGRESS BAR (VIP)
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Progress Bar (VIP)</h2>
+    <p class="ds-section-desc">Barra de progresso do programa Foxbit VIP.</p>
+    <div class="fx-card" style="max-width:400px">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px">
+        <div>
+          <div style="font-size:12px; color:var(--colors-monochromatic-g600)">Faixa atual</div>
+          <div style="font-size:14px; font-weight:600">R$ 0,00</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px; color:var(--colors-monochromatic-g600)">Próxima faixa</div>
+          <div style="font-size:14px; font-weight:600">R$ 25.000,00</div>
+        </div>
+      </div>
+      <div class="fx-progress"><div class="fx-progress-bar" style="width:0%"></div></div>
+      <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center">
+        <div>
+          <span style="font-size:11px; color:var(--colors-monochromatic-g600)">Taxas vigentes</span><br>
+          <span style="font-size:13px; font-weight:600">Maker 0.25% · Taker 0.5%</span>
+        </div>
+        <span style="font-size:14px; font-weight:700; color:var(--colors-primary-g500)">INICIANTE</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       15. HIGHLIGHT CARDS
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">Highlight Cards</h2>
+    <p class="ds-section-desc">Cards de destaque com moeda, nome e variação.</p>
+    <div class="fx-card" style="max-width:380px; padding:16px">
+      <div style="font-size:13px; font-weight:600; color:var(--colors-primary-g500); margin-bottom:12px">Maiores altas (24h)</div>
+      <div class="fx-highlight-card">
+        <img src="https://statics.foxbit.com.br/icons/colored/dexe.svg" alt="DEXE">
+        <div style="flex:1"><div style="font-weight:600; font-size:14px">DeXe</div><div style="font-size:12px; color:var(--colors-monochromatic-g600)">dexe</div></div>
+        <span class="fx-badge fx-badge--up">▲ 4,84%</span>
+      </div>
+      <div class="fx-highlight-card">
+        <img src="https://statics.foxbit.com.br/icons/colored/ldo.svg" alt="LDO">
+        <div style="flex:1"><div style="font-weight:600; font-size:14px">Lido DAO</div><div style="font-size:12px; color:var(--colors-monochromatic-g600)">ldo</div></div>
+        <span class="fx-badge fx-badge--up">▲ 4,22%</span>
+      </div>
+      <div class="fx-highlight-card">
+        <img src="https://statics.foxbit.com.br/icons/colored/jasmy.svg" alt="JASMY">
+        <div style="flex:1"><div style="font-weight:600; font-size:14px">JasmyCoin</div><div style="font-size:12px; color:var(--colors-monochromatic-g600)">jasmy</div></div>
+        <span class="fx-badge fx-badge--up">▲ 2,76%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       16. TOKENS CSS (Referência)
+       ============================ -->
+  <section class="ds-section">
+    <h2 class="ds-section-title">CSS Variables — Copiar e Colar</h2>
+    <p class="ds-section-desc">Todas as variáveis CSS prontas para uso no seu projeto.</p>
+    <div class="code-hint">
+:root {<br>
+&nbsp;&nbsp;/* Cores */<br>
+&nbsp;&nbsp;--colors-primary-g100: #fff0e0;<br>
+&nbsp;&nbsp;--colors-primary-g500: #ff6f00;<br>
+&nbsp;&nbsp;--colors-primary-g600: #e56300;<br>
+&nbsp;&nbsp;--colors-mono-white: #ffffff;<br>
+&nbsp;&nbsp;--colors-mono-black: #212427;<br>
+&nbsp;&nbsp;--colors-mono-g50: #f5f6f7;<br>
+&nbsp;&nbsp;--colors-mono-g100: #ecedef;<br>
+&nbsp;&nbsp;--colors-mono-g200: #d5d7da;<br>
+&nbsp;&nbsp;--colors-mono-g300: #b2b7bb;<br>
+&nbsp;&nbsp;--colors-mono-g600: #8d959d;<br>
+&nbsp;&nbsp;--colors-mono-g900: #212529;<br>
+&nbsp;&nbsp;--colors-up: #15a96f;<br>
+&nbsp;&nbsp;--colors-down: #e43b3b;<br>
+&nbsp;&nbsp;--colors-error: #ff4747;<br>
+&nbsp;&nbsp;--colors-success: #1cc97d;<br>
+&nbsp;&nbsp;--colors-success-bg: #e8f3ea;<br><br>
+&nbsp;&nbsp;/* Tipografia */<br>
+&nbsp;&nbsp;--font-family: 'Reddit Sans', sans-serif;<br>
+&nbsp;&nbsp;--fs-xxs: 0.625rem;<br>
+&nbsp;&nbsp;--fs-xs: 0.875rem;<br>
+&nbsp;&nbsp;--fs-sm: 1rem;<br>
+&nbsp;&nbsp;--fs-lg: 1.25rem;<br>
+&nbsp;&nbsp;--fs-xl: 1.5rem;<br>
+&nbsp;&nbsp;--fs-xxl: 2rem;<br><br>
+&nbsp;&nbsp;/* Espaçamentos */<br>
+&nbsp;&nbsp;--sp-xxxs: 4px;<br>
+&nbsp;&nbsp;--sp-xxs: 8px;<br>
+&nbsp;&nbsp;--sp-xs: 12px;<br>
+&nbsp;&nbsp;--sp-sm: 16px;<br>
+&nbsp;&nbsp;--sp-md: 20px;<br>
+&nbsp;&nbsp;--sp-lg: 24px;<br>
+&nbsp;&nbsp;--sp-xl: 32px;<br>
+&nbsp;&nbsp;--sp-xxl: 40px;<br><br>
+&nbsp;&nbsp;/* Radius */<br>
+&nbsp;&nbsp;--radius-xs: 4px;<br>
+&nbsp;&nbsp;--radius-sm: 8px;<br>
+&nbsp;&nbsp;--radius-md: 12px;<br>
+&nbsp;&nbsp;--radius-lg: 16px;<br>
+&nbsp;&nbsp;--radius-xl: 20px;<br>
+&nbsp;&nbsp;--radius-pill: 999px;<br>
+}
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

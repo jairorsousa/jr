@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "jr-app",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "echo Server running"],
+      "port": 8080,
+      "autoPort": false
+    }
+  ]
+}

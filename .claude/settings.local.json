@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Jairo Rodrigues/PhpstormProjects/**)",
+      "Bash(shopt -s dotglob)",
+      "Bash(cp -r jr-temp/* jr/)",
+      "Bash(cp jr-temp/.env jr/)",
+      "Bash(cp jr-temp/.env.example jr/)",
+      "Bash(composer require:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(docker compose:*)",
+      "Bash(npx vite:*)",
+      "Bash(timeout 180 bash -c 'while ! grep -q \"\"DONE\\\\|ERROR\\\\|exporting to image\"\" \"\"C:\\\\Users\\\\JAIROR~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Jairo-Rodrigues-PhpstormProjects-jr\\\\b51a1909-988e-44f5-b13b-b895fa2ff9a5\\\\tasks\\\\b3geu8z29.output\"\" 2>/dev/null; do sleep 5; done')",
+      "Bash(docker volume:*)",
+      "Bash(docker rm:*)"
+    ]
+  }
+}

@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* -- Cores -- */
+    --colors-primary-g100: #fff0e0;
+    --colors-primary-g500: #ff6f00;
+    --colors-primary-g600: #e56300;
+
+    --colors-mono-white: #ffffff;
+    --colors-mono-black: #212427;
+    --colors-mono-g50: #f5f6f7;
+    --colors-mono-g100: #ecedef;
+    --colors-mono-g200: #d5d7da;
+    --colors-mono-g300: #b2b7bb;
+    --colors-mono-g600: #8d959d;
+    --colors-mono-g900: #212529;
+
+    --colors-up: #15a96f;
+    --colors-up-bg: #e8f8f0;
+    --colors-down: #e43b3b;
+    --colors-down-bg: #fdeaea;
+    --colors-error: #ff4747;
+    --colors-success: #1cc97d;
+    --colors-success-bg: #e8f3ea;
+    --colors-info: #1a73e8;
+    --colors-info-bg: #e8f0fe;
+
+    /* -- Tipografia -- */
+    --font-family: 'Reddit Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --fs-xxs: 0.625rem;
+    --fs-xs: 0.875rem;
+    --fs-sm: 1rem;
+    --fs-md: 1.125rem;
+    --fs-lg: 1.25rem;
+    --fs-xl: 1.5rem;
+    --fs-xxl: 2rem;
+
+    --fw-light: 300;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    --lh-sm: 1.2;
+    --lh-md: 1.4;
+    --lh-lg: 1.6;
+
+    /* -- Espacamentos -- */
+    --sp-xxxs: 0.25rem;
+    --sp-xxs: 0.5rem;
+    --sp-xs: 0.75rem;
+    --sp-sm: 1rem;
+    --sp-md: 1.25rem;
+    --sp-lg: 1.5rem;
+    --sp-xl: 2rem;
+    --sp-xxl: 2.5rem;
+
+    /* -- Bordas -- */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-pill: 999px;
+
+    /* -- Sombras -- */
+    --shadow-card: 0 2px 8px rgba(0,0,0,.06);
+    --shadow-dropdown: 0 4px 20px 0 hsla(0,0%,54%,.16), 0 4px 20px 0 rgba(0,0,0,.1);
+    --shadow-elevated: 0 8px 32px rgba(0,0,0,.12);
+
+    /* -- Z-Index -- */
+    --z-dropdown: 100;
+    --z-modal: 1000;
+}
+
+/* -- Dark Theme -- */
+[data-theme="dark"] {
+    --colors-primary-g100: #3d2800;
+    --colors-primary-g500: #ff8c33;
+    --colors-primary-g600: #ff6f00;
+
+    --colors-mono-white: #1a1d21;
+    --colors-mono-black: #f5f6f7;
+    --colors-mono-g50: #22262b;
+    --colors-mono-g100: #2c3138;
+    --colors-mono-g200: #3a4049;
+    --colors-mono-g300: #5a6370;
+    --colors-mono-g600: #9aa1a9;
+    --colors-mono-g900: #f0f1f3;
+
+    --colors-up: #22c77e;
+    --colors-up-bg: #162e22;
+    --colors-down: #ef5555;
+    --colors-down-bg: #3a1a1a;
+    --colors-error: #ff5c5c;
+    --colors-success: #22c77e;
+    --colors-success-bg: #162e22;
+    --colors-info: #4d9af5;
+    --colors-info-bg: #1a2a40;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,.3);
+    --shadow-dropdown: 0 4px 20px rgba(0,0,0,.4);
+    --shadow-elevated: 0 8px 32px rgba(0,0,0,.4);
+}
+
+/* -- Responsive table wrapper -- */
+.table-responsive {
+    @apply overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0;
+}
+
+/* -- Mobile modal fullscreen -- */
+@media (max-width: 639px) {
+    .modal-content {
+        @apply !max-w-full !w-full !mx-0 !rounded-none min-h-screen;
+    }
+}
+
+/* -- Form inputs dark mode -- */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background-color: var(--colors-mono-g50);
+    border-color: var(--colors-mono-g200);
+    color: var(--colors-mono-g900);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: var(--colors-mono-g300);
+}
+
+/* -- Main content padding mobile -- */
+@media (max-width: 639px) {
+    main.flex-1 {
+        @apply px-3 py-4;
+    }
+}
