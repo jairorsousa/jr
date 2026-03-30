@@ -7,27 +7,123 @@
         <div class="mb-4"><x-jr.alert variant="error">{{ session('error') }}</x-jr.alert></div>
     @endif
 
+    <!-- Month Navigation -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+            <button wire:click="previousMonth" class="p-2 rounded-xl text-mono-600 hover:bg-mono-100 transition-colors" title="Mes anterior">
+                <span class="material-icons-outlined text-[22px]">chevron_left</span>
+            </button>
+
+            <div class="text-center min-w-[180px]">
+                @if($customRange)
+                    <h2 class="text-lg font-bold text-mono-900">Periodo personalizado</h2>
+                    <p class="text-xs text-mono-500">{{ \Carbon\Carbon::parse($filterDateFrom)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($filterDateTo)->format('d/m/Y') }}</p>
+                @else
+                    <h2 class="text-lg font-bold text-mono-900">{{ $monthLabel }}</h2>
+                    @unless($isCurrentMonth)
+                        <button wire:click="goToCurrentMonth" class="text-xs text-primary-500 hover:underline font-medium">
+                            Voltar ao mes atual
+                        </button>
+                    @endunless
+                @endif
+            </div>
+
+            <button wire:click="nextMonth" class="p-2 rounded-xl text-mono-600 hover:bg-mono-100 transition-colors" title="Proximo mes">
+                <span class="material-icons-outlined text-[22px]">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Custom date range toggle -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open"
+                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors
+                               {{ $customRange ? 'bg-primary-100 text-primary-600' : 'text-mono-600 hover:bg-mono-100' }}">
+                    <span class="material-icons-outlined text-[18px]">date_range</span>
+                    <span class="hidden sm:inline">Periodo</span>
+                </button>
+
+                <div x-show="open" x-cloak @click.away="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="absolute right-0 top-11 bg-mono-white rounded-2xl shadow-elevated border border-mono-100 p-4 z-50 w-72">
+                    <p class="text-sm font-semibold text-mono-900 mb-3">Periodo personalizado</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs text-mono-500 font-medium mb-1 block">Data inicial</label>
+                            <input type="date" wire:model="filterDateFrom"
+                                   class="w-full bg-mono-white border border-mono-200 rounded-xl px-3 h-10 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">
+                        </div>
+                        <div>
+                            <label class="text-xs text-mono-500 font-medium mb-1 block">Data final</label>
+                            <input type="date" wire:model="filterDateTo"
+                                   class="w-full bg-mono-white border border-mono-200 rounded-xl px-3 h-10 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">
+                        </div>
+                        <div class="flex gap-2">
+                            <button wire:click="applyCustomRange" @click="open = false"
+                                    class="flex-1 h-9 rounded-xl bg-primary-500 text-white text-xs font-semibold hover:bg-primary-600 transition-colors">
+                                Aplicar
+                            </button>
+                            @if($customRange)
+                                <button wire:click="clearCustomRange" @click="open = false"
+                                        class="h-9 px-3 rounded-xl bg-mono-100 text-mono-600 text-xs font-semibold hover:bg-mono-200 transition-colors">
+                                    Limpar
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <x-jr.button wire:click="openCreateModal" size="sm">
+                <span class="material-icons-outlined text-[16px]">add</span>
+                Nova
+            </x-jr.button>
+        </div>
+    </div>
+
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <x-jr.card>
-            <p class="text-sm text-mono-600 font-medium">Receitas</p>
-            <p class="text-2xl font-bold text-up mt-1">R$ {{ number_format($totalIncome, 2, ',', '.') }}</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-up-bg flex items-center justify-center">
+                    <span class="material-icons-outlined text-[22px] text-up">arrow_upward</span>
+                </div>
+                <div>
+                    <p class="text-xs text-mono-600">Receitas</p>
+                    <p class="text-lg font-bold text-up">R$ {{ number_format($totalIncome, 2, ',', '.') }}</p>
+                </div>
+            </div>
         </x-jr.card>
         <x-jr.card>
-            <p class="text-sm text-mono-600 font-medium">Despesas</p>
-            <p class="text-2xl font-bold text-down mt-1">R$ {{ number_format($totalExpense, 2, ',', '.') }}</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-down-bg flex items-center justify-center">
+                    <span class="material-icons-outlined text-[22px] text-down">arrow_downward</span>
+                </div>
+                <div>
+                    <p class="text-xs text-mono-600">Despesas</p>
+                    <p class="text-lg font-bold text-down">R$ {{ number_format($totalExpense, 2, ',', '.') }}</p>
+                </div>
+            </div>
         </x-jr.card>
         <x-jr.card>
-            <p class="text-sm text-mono-600 font-medium">Saldo do Periodo</p>
-            @php $balance = $totalIncome - $totalExpense; @endphp
-            <p class="text-2xl font-bold {{ $balance >= 0 ? 'text-up' : 'text-down' }} mt-1">
-                R$ {{ number_format(abs($balance), 2, ',', '.') }}
-                {{ $balance < 0 ? '-' : '' }}
-            </p>
+            <div class="flex items-center gap-3">
+                @php $balance = $totalIncome - $totalExpense; @endphp
+                <div class="w-10 h-10 rounded-xl {{ $balance >= 0 ? 'bg-up-bg' : 'bg-down-bg' }} flex items-center justify-center">
+                    <span class="material-icons-outlined text-[22px] {{ $balance >= 0 ? 'text-up' : 'text-down' }}">account_balance</span>
+                </div>
+                <div>
+                    <p class="text-xs text-mono-600">Saldo do Periodo</p>
+                    <p class="text-lg font-bold {{ $balance >= 0 ? 'text-up' : 'text-down' }}">
+                        {{ $balance < 0 ? '-' : '' }}R$ {{ number_format(abs($balance), 2, ',', '.') }}
+                    </p>
+                </div>
+            </div>
         </x-jr.card>
     </div>
 
-    <!-- Filters + Actions -->
+    <!-- Filters -->
     <x-jr.card class="mb-4">
         <div class="flex flex-col lg:flex-row gap-4">
             <!-- Search -->
@@ -67,20 +163,10 @@
                     <option value="pending">Pendente</option>
                 </select>
 
-                <input type="date" wire:model.live="filterDateFrom"
-                       class="bg-mono-white border border-mono-200 rounded-pill px-3 h-10 text-xs text-mono-900 focus:border-primary-500 focus:ring-0">
-                <input type="date" wire:model.live="filterDateTo"
-                       class="bg-mono-white border border-mono-200 rounded-pill px-3 h-10 text-xs text-mono-900 focus:border-primary-500 focus:ring-0">
-
-                @if($search || $filterType || $filterCategory || $filterAccount || $filterStatus || $filterDateFrom || $filterDateTo)
+                @if($search || $filterType || $filterCategory || $filterAccount || $filterStatus)
                     <button wire:click="clearFilters" class="text-xs text-primary-500 hover:underline font-medium">Limpar</button>
                 @endif
             </div>
-
-            <x-jr.button wire:click="openCreateModal" size="sm">
-                <span class="material-icons-outlined text-[16px]">add</span>
-                Nova
-            </x-jr.button>
         </div>
     </x-jr.card>
 
@@ -89,7 +175,7 @@
         <x-jr.card>
             <div class="text-center py-8">
                 <span class="material-icons-outlined text-[48px] text-mono-200">receipt_long</span>
-                <p class="text-mono-600 mt-2">Nenhuma transacao encontrada.</p>
+                <p class="text-mono-600 mt-2">Nenhuma transacao encontrada neste periodo.</p>
                 <div class="mt-4">
                     <x-jr.button wire:click="openCreateModal" size="sm">Criar primeira transacao</x-jr.button>
                 </div>
@@ -185,7 +271,7 @@
                     </div>
 
                     <form wire:submit="save">
-                        <div class="px-6 py-5 space-y-4">
+                        <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
                             <!-- Type Toggle -->
                             <div>
                                 <label class="block text-sm font-medium text-mono-600 mb-1.5">Tipo</label>

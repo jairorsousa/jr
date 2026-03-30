@@ -22,14 +22,20 @@ class Transacoes extends Component
     public ?string $editingId = null;
     public ?string $deletingId = null;
 
+    // Month navigation
+    public string $currentMonth;
+
+    // Custom date range
+    public bool $customRange = false;
+    public string $filterDateFrom = '';
+    public string $filterDateTo = '';
+
     // Filters
     public string $search = '';
     public string $filterType = '';
     public string $filterCategory = '';
     public string $filterAccount = '';
     public string $filterStatus = '';
-    public string $filterDateFrom = '';
-    public string $filterDateTo = '';
 
     // Form fields
     public string $type = 'expense';
@@ -50,7 +56,15 @@ class Transacoes extends Component
         'filterCategory' => ['except' => ''],
         'filterAccount' => ['except' => ''],
         'filterStatus' => ['except' => ''],
+        'currentMonth' => ['except' => ''],
     ];
+
+    public function mount(): void
+    {
+        if (!$this->currentMonth) {
+            $this->currentMonth = now()->format('Y-m');
+        }
+    }
 
     protected function rules(): array
     {
@@ -67,6 +81,49 @@ class Transacoes extends Component
             'credit_card_id' => 'nullable|uuid|exists:credit_cards,id',
             'installments' => 'integer|min:1|max:48',
         ];
+    }
+
+    public function previousMonth(): void
+    {
+        $this->currentMonth = Carbon::parse($this->currentMonth . '-01')->subMonth()->format('Y-m');
+        $this->customRange = false;
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->resetPage();
+    }
+
+    public function nextMonth(): void
+    {
+        $this->currentMonth = Carbon::parse($this->currentMonth . '-01')->addMonth()->format('Y-m');
+        $this->customRange = false;
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->resetPage();
+    }
+
+    public function goToCurrentMonth(): void
+    {
+        $this->currentMonth = now()->format('Y-m');
+        $this->customRange = false;
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->resetPage();
+    }
+
+    public function applyCustomRange(): void
+    {
+        if ($this->filterDateFrom && $this->filterDateTo) {
+            $this->customRange = true;
+            $this->resetPage();
+        }
+    }
+
+    public function clearCustomRange(): void
+    {
+        $this->customRange = false;
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->resetPage();
     }
 
     public function updatingSearch(): void
@@ -96,7 +153,7 @@ class Transacoes extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'filterType', 'filterCategory', 'filterAccount', 'filterStatus', 'filterDateFrom', 'filterDateTo']);
+        $this->reset(['search', 'filterType', 'filterCategory', 'filterAccount', 'filterStatus']);
         $this->resetPage();
     }
 
@@ -178,7 +235,6 @@ class Transacoes extends Component
                 app(BalanceService::class)->recalculate(Account::find($oldAccountId));
             }
 
-            // Recalculate invoice if linked
             if ($transaction->credit_card_invoice_id) {
                 app(InvoiceService::class)->calculateTotal($transaction->invoice);
             }
@@ -188,7 +244,6 @@ class Transacoes extends Component
             $transaction = Transaction::create($data);
             app(BalanceService::class)->recalculate($transaction->account);
 
-            // Recalculate invoice total
             if ($transaction->credit_card_invoice_id) {
                 app(InvoiceService::class)->calculateTotal($transaction->invoice);
             }
@@ -240,15 +295,24 @@ class Transacoes extends Component
 
     private function getFilteredQuery()
     {
-        $query = Transaction::with(['account', 'category'])
-            ->when($this->search, fn ($q) => $q->where('description', 'like', "%{$this->search}%"))
-            ->when($this->filterType, fn ($q) => $q->where('type', $this->filterType))
-            ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
-            ->when($this->filterAccount, fn ($q) => $q->where('account_id', $this->filterAccount))
-            ->when($this->filterStatus === 'paid', fn ($q) => $q->where('is_paid', true))
-            ->when($this->filterStatus === 'pending', fn ($q) => $q->where('is_paid', false))
-            ->when($this->filterDateFrom, fn ($q) => $q->where('date', '>=', $this->filterDateFrom))
-            ->when($this->filterDateTo, fn ($q) => $q->where('date', '<=', $this->filterDateTo));
+        $query = Transaction::with(['account', 'category']);
+
+        // Date filtering: custom range or month navigation
+        if ($this->customRange && $this->filterDateFrom && $this->filterDateTo) {
+            $query->where('date', '>=', $this->filterDateFrom)
+                  ->where('date', '<=', $this->filterDateTo);
+        } else {
+            $ref = Carbon::parse($this->currentMonth . '-01');
+            $query->where('date', '>=', $ref->startOfMonth()->format('Y-m-d'))
+                  ->where('date', '<=', $ref->endOfMonth()->format('Y-m-d'));
+        }
+
+        $query->when($this->search, fn ($q) => $q->where('description', 'like', "%{$this->search}%"))
+              ->when($this->filterType, fn ($q) => $q->where('type', $this->filterType))
+              ->when($this->filterCategory, fn ($q) => $q->where('category_id', $this->filterCategory))
+              ->when($this->filterAccount, fn ($q) => $q->where('account_id', $this->filterAccount))
+              ->when($this->filterStatus === 'paid', fn ($q) => $q->where('is_paid', true))
+              ->when($this->filterStatus === 'pending', fn ($q) => $q->where('is_paid', false));
 
         return $query;
     }
@@ -265,8 +329,13 @@ class Transacoes extends Component
         $categories = Category::orderBy('name')->get();
         $creditCards = CreditCard::where('is_active', true)->orderBy('name')->get();
 
+        $ref = Carbon::parse($this->currentMonth . '-01');
+        $monthLabel = ucfirst($ref->translatedFormat('F Y'));
+        $isCurrentMonth = $this->currentMonth === now()->format('Y-m');
+
         return view('livewire.financeiro.transacoes', compact(
-            'transactions', 'accounts', 'categories', 'creditCards', 'totalIncome', 'totalExpense'
+            'transactions', 'accounts', 'categories', 'creditCards',
+            'totalIncome', 'totalExpense', 'monthLabel', 'isCurrentMonth'
         ));
     }
 }
