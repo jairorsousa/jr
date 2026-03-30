@@ -23,7 +23,7 @@ class Transacoes extends Component
     public ?string $deletingId = null;
 
     // Month navigation
-    public string $currentMonth;
+    public string $currentMonth = '';
 
     // Custom date range
     public bool $customRange = false;
