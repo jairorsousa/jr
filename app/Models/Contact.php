@@ -31,4 +31,9 @@ class Contact extends Model
     {
         return $this->hasMany(Deal::class);
     }
+
+    public function whatsappConversations(): HasMany
+    {
+        return $this->hasMany(WhatsAppConversation::class);
+    }
 }

@@ -25,6 +25,8 @@
                 ['route' => 'crm.pipeline', 'icon' => 'view_kanban', 'label' => 'Pipeline'],
                 ['route' => 'crm.contatos', 'icon' => 'contacts', 'label' => 'Contatos'],
                 ['route' => 'crm.produtos', 'icon' => 'inventory_2', 'label' => 'Produtos'],
+                ['route' => 'whatsapp.instancias', 'icon' => 'smartphone', 'label' => 'WhatsApp'],
+                ['route' => 'whatsapp.chat', 'icon' => 'chat', 'label' => 'Conversas'],
             ];
         @endphp
 

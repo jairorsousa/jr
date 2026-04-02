@@ -72,10 +72,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('crm.produtos');
     });
 
+    // WhatsApp
+    Route::prefix('whatsapp')->group(function () {
+        Route::get('/instancias', function () {
+            return view('whatsapp.instancias');
+        })->name('whatsapp.instancias');
+
+        Route::get('/chat/{instanceId?}', function ($instanceId = null) {
+            return view('whatsapp.chat', ['instanceId' => $instanceId]);
+        })->name('whatsapp.chat');
+    });
+
     // Configuracoes
     Route::get('/configuracoes', function () {
         return view('configuracoes');
     })->name('configuracoes');
 });
+
+// WhatsApp Webhook (public route - no auth)
+Route::post('/api/whatsapp/webhook', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])
+    ->name('whatsapp.webhook');
 
 require __DIR__.'/auth.php';
