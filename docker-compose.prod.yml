@@ -65,6 +65,22 @@ services:
     networks:
       - jr-network
 
+  reverb:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: always
+    command: php artisan reverb:start --host=0.0.0.0 --port=8085
+    ports:
+      - "8085:8085"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - app
+      - redis
+    networks:
+      - jr-network
+
 volumes:
   redis_data:
   storage_data:

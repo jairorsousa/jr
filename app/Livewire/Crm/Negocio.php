@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\Deal;
 use App\Models\DealActivity;
 use App\Models\Product;
+use App\Models\WhatsAppConversation;
 use Livewire\Component;
 
 class Negocio extends Component
@@ -219,6 +220,16 @@ class Negocio extends Component
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $stages = DealStage::cases();
 
-        return view('livewire.crm.negocio', compact('contacts', 'products', 'stages'));
+        $whatsappConversations = WhatsAppConversation::where('deal_id', $this->dealId)
+            ->orWhere(function ($q) {
+                if ($this->deal?->contact_id) {
+                    $q->where('contact_id', $this->deal->contact_id);
+                }
+            })
+            ->with('instance')
+            ->orderByDesc('last_message_at')
+            ->get();
+
+        return view('livewire.crm.negocio', compact('contacts', 'products', 'stages', 'whatsappConversations'));
     }
 }

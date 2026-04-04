@@ -38,6 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('financeiro.investimentos');
         })->name('financeiro.investimentos');
 
+        Route::get('/comparacao', function () {
+            return view('financeiro.comparacao');
+        })->name('financeiro.comparacao');
+
         Route::get('/importar-ofx', function () {
             return view('financeiro.importar-ofx');
         })->name('financeiro.importar-ofx');
@@ -81,6 +85,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/chat/{instanceId?}', function ($instanceId = null) {
             return view('whatsapp.chat', ['instanceId' => $instanceId]);
         })->name('whatsapp.chat');
+
+        Route::get('/templates', function () {
+            return view('whatsapp.templates');
+        })->name('whatsapp.templates');
+
+        Route::get('/campanhas', function () {
+            return view('whatsapp.campanhas');
+        })->name('whatsapp.campanhas');
     });
 
     // Configuracoes

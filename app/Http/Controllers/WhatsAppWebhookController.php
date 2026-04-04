@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityType;
 use App\Enums\InstanceStatus;
 use App\Enums\MessageType;
+use App\Events\NewWhatsAppMessage;
+use App\Events\WhatsAppConnectionUpdated;
+use App\Events\WhatsAppMessageStatusUpdated;
+use App\Models\Contact;
+use App\Models\DealActivity;
 use App\Models\WhatsAppConversation;
 use App\Models\WhatsAppInstance;
 use App\Models\WhatsAppMessage;
@@ -66,15 +72,27 @@ class WhatsAppWebhookController extends Controller
         $message = $messageData['message'] ?? [];
         [$type, $body, $mediaUrl, $mimetype, $filename] = $this->parseMessage($message, $messageData);
 
+        // Auto-link CRM contact by phone number
+        $crmContact = null;
+        if (!$isGroup && $phone) {
+            $crmContact = Contact::where('phone', 'like', '%' . substr($phone, -9) . '%')->first();
+        }
+
         // Find or create conversation
         $conversation = WhatsAppConversation::firstOrCreate(
             ['instance_id' => $instance->id, 'remote_jid' => $remoteJid],
             [
                 'contact_name' => $pushName,
                 'contact_phone' => $phone,
+                'contact_id' => $crmContact?->id,
                 'is_group' => $isGroup,
             ]
         );
+
+        // If conversation exists but has no CRM contact yet, try linking
+        if (!$conversation->contact_id && $crmContact) {
+            $conversation->update(['contact_id' => $crmContact->id]);
+        }
 
         // Update contact name if provided
         if ($pushName && $conversation->contact_name !== $pushName) {
@@ -87,7 +105,7 @@ class WhatsAppWebhookController extends Controller
         }
 
         // Create message
-        WhatsAppMessage::create([
+        $newMessage = WhatsAppMessage::create([
             'conversation_id' => $conversation->id,
             'message_id' => $messageId,
             'type' => $type,
@@ -107,6 +125,19 @@ class WhatsAppWebhookController extends Controller
             'last_message_at' => now(),
             'unread_count' => $fromMe ? $conversation->unread_count : $conversation->unread_count + 1,
         ]);
+
+        // Log activity on linked deal (only for received messages)
+        if (!$fromMe && $conversation->deal_id) {
+            DealActivity::create([
+                'deal_id' => $conversation->deal_id,
+                'type' => ActivityType::WhatsApp,
+                'description' => 'Mensagem recebida: ' . mb_substr($body ?? "[{$type}]", 0, 100),
+                'happened_at' => now(),
+            ]);
+        }
+
+        // Broadcast new message in real-time
+        broadcast(new NewWhatsAppMessage($newMessage, $conversation->fresh()));
 
         return response()->json(['status' => 'processed']);
     }
@@ -137,8 +168,15 @@ class WhatsAppWebhookController extends Controller
             $newStatus = $statusMap[$status] ?? null;
 
             if ($newStatus) {
-                WhatsAppMessage::where('message_id', $messageId)
-                    ->update(['status' => $newStatus]);
+                $msg = WhatsAppMessage::where('message_id', $messageId)->first();
+                if ($msg) {
+                    $msg->update(['status' => $newStatus]);
+                    broadcast(new WhatsAppMessageStatusUpdated(
+                        $msg->conversation_id,
+                        $messageId,
+                        $newStatus
+                    ));
+                }
             }
         }
 
@@ -161,6 +199,9 @@ class WhatsAppWebhookController extends Controller
             ]);
         }
 
+        // Broadcast connection status change
+        broadcast(new WhatsAppConnectionUpdated($instance->fresh()));
+
         return response()->json(['status' => 'ok']);
     }
 
@@ -172,6 +213,9 @@ class WhatsAppWebhookController extends Controller
             'status' => InstanceStatus::Connecting,
             'qrcode' => $qrcode,
         ]);
+
+        // Broadcast QR code update
+        broadcast(new WhatsAppConnectionUpdated($instance->fresh()));
 
         return response()->json(['status' => 'ok']);
     }

@@ -1,4 +1,4 @@
-<div>
+<div x-data="whatsappInstancias()" x-init="init()">
     <!-- Flash Messages -->
     @if (session('success'))
         <div class="mb-4">
@@ -176,7 +176,7 @@
 
     <!-- QR Code Modal -->
     @if($showQrModal)
-        <div class="fixed inset-0 z-modal overflow-y-auto" wire:poll.3s="checkConnection">
+        <div class="fixed inset-0 z-modal overflow-y-auto">
             <div class="fixed inset-0 bg-black/40"></div>
             <div class="flex min-h-screen items-center justify-center p-4">
                 <div class="relative bg-mono-white rounded-2xl shadow-elevated w-full sm:max-w-md overflow-hidden">
@@ -244,3 +244,45 @@
         </div>
     @endif
 </div>
+
+@script
+<script>
+    Alpine.data('whatsappInstancias', () => ({
+        channels: [],
+
+        init() {
+            if (typeof window.Echo === 'undefined') {
+                console.warn('Laravel Echo not available');
+                return;
+            }
+
+            this.subscribeAll();
+        },
+
+        subscribeAll() {
+            // Subscribe to all instance channels for connection updates
+            @foreach($instances as $inst)
+                this.subscribeInstance('{{ $inst->id }}');
+            @endforeach
+        },
+
+        subscribeInstance(instanceId) {
+            const channelName = `whatsapp.instance.${instanceId}`;
+
+            const channel = window.Echo.channel(channelName)
+                .listen('.connection.updated', (e) => {
+                    // Trigger Livewire re-render with fresh data
+                    this.$wire.dispatch('echo-connection-updated', { instance: e.instance });
+                });
+
+            this.channels.push(channelName);
+        },
+
+        destroy() {
+            this.channels.forEach(channel => {
+                window.Echo.leave(channel);
+            });
+        }
+    }));
+</script>
+@endscript

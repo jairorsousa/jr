@@ -60,6 +60,23 @@ services:
     networks:
       - jr-network
 
+  reverb:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan reverb:start --host=0.0.0.0 --port=8085
+    ports:
+      - "8085:8085"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - app
+      - redis
+    networks:
+      - jr-network
+
 networks:
   jr-network:
     driver: bridge

@@ -20,6 +20,7 @@
                 ['route' => 'financeiro.categorias', 'icon' => 'label', 'label' => 'Categorias'],
                 ['route' => 'financeiro.cartoes', 'icon' => 'credit_card', 'label' => 'Cartoes'],
                 ['route' => 'financeiro.investimentos', 'icon' => 'trending_up', 'label' => 'Investimentos'],
+                ['route' => 'financeiro.comparacao', 'icon' => 'compare_arrows', 'label' => 'Comparacao'],
                 ['route' => 'agenda', 'icon' => 'calendar_today', 'label' => 'Agenda'],
                 ['route' => 'tarefas', 'icon' => 'check_circle', 'label' => 'Tarefas'],
                 ['route' => 'crm.pipeline', 'icon' => 'view_kanban', 'label' => 'Pipeline'],
@@ -27,6 +28,8 @@
                 ['route' => 'crm.produtos', 'icon' => 'inventory_2', 'label' => 'Produtos'],
                 ['route' => 'whatsapp.instancias', 'icon' => 'smartphone', 'label' => 'WhatsApp'],
                 ['route' => 'whatsapp.chat', 'icon' => 'chat', 'label' => 'Conversas'],
+                ['route' => 'whatsapp.templates', 'icon' => 'description', 'label' => 'Templates'],
+                ['route' => 'whatsapp.campanhas', 'icon' => 'campaign', 'label' => 'Campanhas'],
             ];
         @endphp
 

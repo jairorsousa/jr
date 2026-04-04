@@ -53,6 +53,7 @@
                     <th class="text-left px-4 py-3 text-xs font-semibold text-mono-600 uppercase tracking-wider">Telefone</th>
                     <th class="text-left px-4 py-3 text-xs font-semibold text-mono-600 uppercase tracking-wider">Empresa</th>
                     <th class="text-center px-4 py-3 text-xs font-semibold text-mono-600 uppercase tracking-wider">Negocios</th>
+                    <th class="text-center px-4 py-3 text-xs font-semibold text-mono-600 uppercase tracking-wider">WhatsApp</th>
                     <th class="text-right px-4 py-3 text-xs font-semibold text-mono-600 uppercase tracking-wider">Acoes</th>
                 </tr>
             </x-slot:header>
@@ -80,6 +81,18 @@
                             <x-jr.badge variant="neutral" size="sm">
                                 {{ $contact->deals_count }}
                             </x-jr.badge>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            @if($contact->whatsapp_conversations_count > 0)
+                                <a href="{{ route('whatsapp.chat') }}" wire:navigate
+                                   class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors"
+                                   title="{{ $contact->whatsapp_conversations_count }} conversa(s)">
+                                    <span class="material-icons-outlined text-[16px]">chat</span>
+                                    <span class="text-xs font-semibold">{{ $contact->whatsapp_conversations_count }}</span>
+                                </a>
+                            @else
+                                <span class="text-mono-200 text-xs">--</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-right">
                             <div class="relative inline-block" x-data="{ open: false }">

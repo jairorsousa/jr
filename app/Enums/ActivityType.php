@@ -9,6 +9,7 @@ enum ActivityType: string
     case Email = 'email';
     case Meeting = 'meeting';
     case StageChange = 'stage_change';
+    case WhatsApp = 'whatsapp';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum ActivityType: string
             self::Email => 'E-mail',
             self::Meeting => 'Reuniao',
             self::StageChange => 'Mudanca de Etapa',
+            self::WhatsApp => 'WhatsApp',
         };
     }
 
@@ -29,6 +31,7 @@ enum ActivityType: string
             self::Email => 'info',
             self::Meeting => 'primary',
             self::StageChange => 'neutral',
+            self::WhatsApp => 'success',
         };
     }
 
@@ -40,6 +43,7 @@ enum ActivityType: string
             self::Email => 'email',
             self::Meeting => 'groups',
             self::StageChange => 'swap_horiz',
+            self::WhatsApp => 'chat',
         };
     }
 }

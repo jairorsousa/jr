@@ -54,6 +54,11 @@ class Deal extends Model
         return $this->hasMany(DealActivity::class);
     }
 
+    public function whatsappConversations(): HasMany
+    {
+        return $this->hasMany(WhatsAppConversation::class);
+    }
+
     public function isOpen(): bool
     {
         return $this->status === DealStatus::Open;

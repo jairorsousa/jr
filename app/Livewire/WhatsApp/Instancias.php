@@ -5,6 +5,7 @@ namespace App\Livewire\WhatsApp;
 use App\Enums\InstanceStatus;
 use App\Models\WhatsAppInstance;
 use App\Services\EvolutionApiService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Instancias extends Component
@@ -35,6 +36,30 @@ class Instancias extends Component
     protected $messages = [
         'instance_name.regex' => 'O nome da instancia deve conter apenas letras, numeros, hifens e underscores.',
     ];
+
+    /**
+     * Called from frontend Echo listener when instance connection changes
+     */
+    #[On('echo-connection-updated')]
+    public function onConnectionUpdated(array $data = []): void
+    {
+        $instanceData = $data['instance'] ?? [];
+        $status = $instanceData['status'] ?? null;
+
+        // If connecting and QR modal is open, update QR code
+        if ($this->showQrModal && $this->connectingId) {
+            $instance = WhatsAppInstance::find($this->connectingId);
+            if ($instance) {
+                if ($instance->status === InstanceStatus::Connected) {
+                    $this->showQrModal = false;
+                    $this->qrcode = null;
+                    session()->flash('success', 'WhatsApp conectado com sucesso!');
+                } elseif ($instance->qrcode) {
+                    $this->qrcode = $instance->qrcode;
+                }
+            }
+        }
+    }
 
     public function openCreateModal(): void
     {

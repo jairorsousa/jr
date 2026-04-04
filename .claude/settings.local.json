@@ -12,7 +12,10 @@
       "Bash(npx vite:*)",
       "Bash(timeout 180 bash -c 'while ! grep -q \"\"DONE\\\\|ERROR\\\\|exporting to image\"\" \"\"C:\\\\Users\\\\JAIROR~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Jairo-Rodrigues-PhpstormProjects-jr\\\\b51a1909-988e-44f5-b13b-b895fa2ff9a5\\\\tasks\\\\b3geu8z29.output\"\" 2>/dev/null; do sleep 5; done')",
       "Bash(docker volume:*)",
-      "Bash(docker rm:*)"
+      "Bash(docker rm:*)",
+      "Bash(npm install:*)",
+      "Bash(php artisan:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

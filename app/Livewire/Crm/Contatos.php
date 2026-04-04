@@ -3,6 +3,7 @@
 namespace App\Livewire\Crm;
 
 use App\Models\Contact;
+use App\Models\WhatsAppConversation;
 use Livewire\Component;
 
 class Contatos extends Component
@@ -115,7 +116,7 @@ class Contatos extends Component
 
     public function render()
     {
-        $contacts = Contact::withCount('deals')
+        $contacts = Contact::withCount(['deals', 'whatsappConversations'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', "%{$this->search}%")

@@ -168,6 +168,7 @@
                                         'bg-mono-100 text-mono-500' => $activity->type === \App\Enums\ActivityType::Note || $activity->type === \App\Enums\ActivityType::StageChange,
                                         'bg-info-100 text-info-600' => $activity->type === \App\Enums\ActivityType::Call || $activity->type === \App\Enums\ActivityType::Email,
                                         'bg-primary-100 text-primary-600' => $activity->type === \App\Enums\ActivityType::Meeting,
+                                        'bg-success/10 text-success' => $activity->type === \App\Enums\ActivityType::WhatsApp,
                                     ])>
                                         <span class="material-icons-outlined text-[18px]">{{ $activity->type->icon() }}</span>
                                     </div>
@@ -251,6 +252,42 @@
                     @endif
                 </x-jr.card>
             @endif
+
+            <!-- WhatsApp Conversations -->
+            <x-jr.card>
+                <h3 class="text-sm font-semibold text-mono-900 mb-3">Conversas WhatsApp</h3>
+                @if($whatsappConversations->isEmpty())
+                    <div class="text-center py-4">
+                        <span class="material-icons-outlined text-[28px] text-mono-200">chat</span>
+                        <p class="text-xs text-mono-300 mt-1">Nenhuma conversa vinculada.</p>
+                    </div>
+                @else
+                    <div class="space-y-2">
+                        @foreach($whatsappConversations as $wConv)
+                            <a href="{{ route('whatsapp.chat', $wConv->instance_id) }}"
+                               class="flex items-center gap-3 p-2.5 rounded-xl bg-mono-50 hover:bg-mono-100 transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                                    <span class="material-icons-outlined text-[16px] text-success">chat</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-medium text-mono-900 truncate">{{ $wConv->displayName() }}</p>
+                                    <p class="text-[10px] text-mono-300 truncate">{{ $wConv->last_message ?? 'Sem mensagens' }}</p>
+                                </div>
+                                @if($wConv->unread_count > 0)
+                                    <span class="w-5 h-5 rounded-full bg-primary-500 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                                        {{ $wConv->unread_count }}
+                                    </span>
+                                @endif
+                                @if($wConv->last_message_at)
+                                    <span class="text-[10px] text-mono-300 flex-shrink-0">
+                                        {{ $wConv->last_message_at->isToday() ? $wConv->last_message_at->format('H:i') : $wConv->last_message_at->format('d/m') }}
+                                    </span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </x-jr.card>
 
             <!-- Deal Details -->
             <x-jr.card>

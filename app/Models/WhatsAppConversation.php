@@ -17,6 +17,7 @@ class WhatsAppConversation extends Model
     protected $fillable = [
         'instance_id',
         'contact_id',
+        'deal_id',
         'remote_jid',
         'contact_name',
         'contact_phone',
@@ -44,6 +45,11 @@ class WhatsAppConversation extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function deal(): BelongsTo
+    {
+        return $this->belongsTo(Deal::class);
     }
 
     public function messages(): HasMany
