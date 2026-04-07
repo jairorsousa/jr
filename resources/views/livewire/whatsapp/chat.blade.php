@@ -258,8 +258,7 @@
             </header>
 
             {{-- ── Mensagens ──────────────────────────────────────── --}}
-            <div class="flex-1 overflow-y-auto overscroll-contain px-6 py-5 space-y-1" id="chat-messages"
-                 style="background-image: url('data:image/svg+xml,<svg width=\"60\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"1\" cy=\"1\" r=\"0.6\" fill=\"%23e5e7eb\" opacity=\"0.4\"/></svg>'); background-size: 30px 30px;"
+            <div class="flex-1 overflow-y-auto overscroll-contain px-6 py-5 space-y-1 bg-mono-50/30" id="chat-messages"
                  x-data x-init="$nextTick(() => { $el.scrollTop = $el.scrollHeight })"
                  x-effect="$wire.conversationId; $nextTick(() => { $el.scrollTop = $el.scrollHeight })">
 
@@ -460,8 +459,7 @@
 
         @else
             {{-- ── Nenhuma conversa selecionada ───────────────────── --}}
-            <div class="flex-1 flex flex-col items-center justify-center text-center px-8"
-                 style="background-image: url('data:image/svg+xml,<svg width=\"60\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"1\" cy=\"1\" r=\"0.6\" fill=\"%23e5e7eb\" opacity=\"0.4\"/></svg>'); background-size: 30px 30px;">
+            <div class="flex-1 flex flex-col items-center justify-center text-center px-8 bg-mono-50/30">
                 <div class="bg-mono-white/80 backdrop-blur-sm rounded-3xl p-10 shadow-sm border border-mono-100/50 max-w-sm">
                     <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-500/20">
                         <span class="material-icons-outlined text-[40px] text-white">chat</span>
