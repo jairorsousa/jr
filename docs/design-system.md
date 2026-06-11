@@ -670,8 +670,8 @@ Contador de notificações não lidas.
 
 ## Referência Visual
 
-O arquivo `foxbit-design-system.html` contém todos os componentes renderizados interativamente.
-Abra no navegador para visualizar cada componente com seus estados.
+O arquivo `jr-design-system.html` (localizado na pasta `docs/`) contém todos os componentes renderizados interativamente.
+Abra no navegador (`docs/jr-design-system.html`) para visualizar cada componente com seus estados.
 
 ---
 

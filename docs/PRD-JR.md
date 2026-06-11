@@ -396,7 +396,7 @@ jr/
 │       └── CategorySeeder.php
 ├── docs/
 │   ├── design-system.md
-│   ├── foxbit-design-system.html
+│   ├── jr-design-system.html
 │   └── PRD-JR.md            ← este arquivo
 └── tests/
     └── Feature/
@@ -584,7 +584,7 @@ O visual do sistema segue os tokens documentados em `design-system.md`, baseados
 
 **Referências na pasta `/docs`:**
 - `design-system.md` — Tokens, componentes, código CSS
-- `foxbit-design-system.html` — Referência visual interativa
+- `jr-design-system.html` — Referência visual interativa
 
 **Elementos-chave:**
 - Fonte: Reddit Sans

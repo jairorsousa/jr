@@ -417,4 +417,4 @@ Fase 8 (Polimento) ← depende de todas as anteriores
 - [ ] Ter Composer instalado (ou usar via Docker)
 - [ ] Ter Node.js 20+ instalado (para Vite/Tailwind)
 - [ ] Ter o arquivo `design-system.md` acessivel para referencia
-- [ ] Ter o `foxbit-design-system.html` para referencia visual
+- [ ] Ter o `jr-design-system.html` para referencia visual

@@ -128,7 +128,7 @@ docker compose exec app npm run build
 
 ### Acessar
 
-- **Aplicacao:** http://localhost:8080
+- **Aplicacao:** http://localhost:8090   (mudei a porta porque a 8080 estava ocupada por outro projeto)
 - **Login:** jairo@jr.com / `password`
 
 ---
@@ -137,7 +137,7 @@ docker compose exec app npm run build
 
 | Servico | Porta | Descricao |
 |---|---|---|
-| **nginx** | 8080 | Servidor web |
+| **nginx** | 8090 | Servidor web (mudei da 8080 por conflito) |
 | **app** | 9000 (interno) | PHP-FPM |
 | **redis** | 6379 | Cache, sessao e filas |
 | **queue** | — | Worker de filas Laravel |

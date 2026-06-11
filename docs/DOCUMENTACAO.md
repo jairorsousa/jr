@@ -237,7 +237,7 @@ O projeto roda com 6 servicos:
 
 | Servico | Porta | Funcao |
 |---|---|---|
-| **nginx** | 8080 | Servidor web |
+| **nginx** | 8090 | Servidor web (ajustado por conflito de porta) |
 | **app** | -- | PHP-FPM (aplicacao) |
 | **redis** | 6379 | Cache, sessao, fila |
 | **queue** | -- | Worker de filas (campanhas) |
