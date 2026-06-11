@@ -52,6 +52,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('agenda.calendario');
     })->name('agenda');
 
+    // Bets
+    Route::prefix('bets')->name('bets.')->group(function () {
+        Route::get('/', function () {
+            return view('bets.dashboard');
+        })->name('dashboard');
+
+        Route::get('/casas', function () {
+            return view('bets.houses.index');
+        })->name('houses');
+
+        Route::get('/usuarios', function () {
+            return view('bets.users.index');
+        })->name('users');
+
+        Route::get('/contas', function () {
+            return view('bets.accounts.index');
+        })->name('accounts');
+
+        Route::get('/contas/{id}', function ($id) {
+            return view('bets.accounts.show', ['id' => $id]);
+        })->name('accounts.show');
+
+        Route::get('/transacoes', function () {
+            return view('bets.transactions.index');
+        })->name('transactions');
+    });
+
     // Tarefas
     Route::get('/tarefas', function () {
         return view('tarefas.index');

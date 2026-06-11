@@ -10,6 +10,7 @@
         'success' => 'text-success bg-success-bg',
         'error' => 'text-error bg-down-bg',
         'info' => 'text-info bg-info-bg',
+        'warning' => 'text-primary-600 bg-primary-100',
         'primary' => 'text-primary-500 bg-primary-100',
         'neutral' => 'text-mono-600 bg-mono-100',
         default => 'text-mono-600 bg-mono-100',

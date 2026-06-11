@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,11 +14,20 @@ return new class extends Migration
             $table->index(['account_id', 'fitid']);
         });
 
-        // Migrate existing FITIDs from description field [FITID] to new column
-        DB::statement("UPDATE transactions SET fitid = SUBSTRING_INDEX(SUBSTRING_INDEX(description, '[', -1), ']', 1) WHERE description LIKE '%[%]'");
+        DB::table('transactions')
+            ->where('description', 'like', '%[%]')
+            ->orderBy('id')
+            ->get(['id', 'description'])
+            ->each(function ($transaction) {
+                preg_match('/\[([^\]]+)\]/', $transaction->description, $matches);
 
-        // Clean up descriptions: remove [FITID] suffix
-        DB::statement("UPDATE transactions SET description = TRIM(SUBSTRING_INDEX(description, ' [', 1)) WHERE description LIKE '%[%]'");
+                DB::table('transactions')
+                    ->where('id', $transaction->id)
+                    ->update([
+                        'fitid' => $matches[1] ?? null,
+                        'description' => trim(preg_replace('/\s*\[[^\]]+\]\s*$/', '', $transaction->description)),
+                    ]);
+            });
     }
 
     public function down(): void
