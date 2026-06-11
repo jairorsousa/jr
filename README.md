@@ -1,11 +1,11 @@
 # Sistema JR
 
-Sistema completo de gerenciamento financeiro pessoal construido com Laravel 12, Livewire 4, Tailwind CSS e PostgreSQL.
+Sistema completo de gerenciamento financeiro pessoal construido com Laravel 12, Livewire 4, Tailwind CSS e MySQL.
 
 ![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
 ![Livewire](https://img.shields.io/badge/Livewire-4-FB70A9?logo=livewire&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 ---
@@ -20,6 +20,7 @@ Sistema completo de gerenciamento financeiro pessoal construido com Laravel 12, 
 - **Faturas** — Navegacao mensal, fechamento, reabertura e pagamento de faturas com lancamento automatico na conta vinculada
 - **Compras parceladas** — Distribuicao automatica de parcelas nas faturas corretas baseado no dia de fechamento
 - **Investimentos** — CRUD com atualizacao de valor, rentabilidade e grafico de distribuicao por tipo
+- **Comparacao Financeira** — Comparacao lado a lado de periodos (meses, trimestres, anos) com filtros, diferencas e breakdown por categoria
 - **Transacoes recorrentes** — Geracao automatica via scheduler diario
 
 ### Dashboard
@@ -58,7 +59,7 @@ Sistema completo de gerenciamento financeiro pessoal construido com Laravel 12, 
 |---|---|
 | Backend | PHP 8.3, Laravel 12 |
 | Frontend | Livewire 4, Alpine.js 3, Tailwind CSS 3 |
-| Banco de Dados | PostgreSQL 16 |
+| Banco de Dados | MySQL 8+ |
 | Cache/Sessao/Fila | Redis 7 |
 | Graficos | Chart.js 4 |
 | Infra | Docker Compose (6 servicos) |
@@ -138,10 +139,12 @@ docker compose exec app npm run build
 |---|---|---|
 | **nginx** | 8080 | Servidor web |
 | **app** | 9000 (interno) | PHP-FPM |
-| **postgres** | 5432 | Banco de dados |
 | **redis** | 6379 | Cache, sessao e filas |
 | **queue** | — | Worker de filas Laravel |
 | **scheduler** | — | Scheduler Laravel (cron) |
+| **reverb** | 8085 | Servidor WebSocket (tempo real WhatsApp) |
+
+> **Nota:** O banco de dados MySQL roda externamente (acessado via `host.docker.internal`). Nao ha container de banco no `docker-compose.yml`.
 
 ---
 

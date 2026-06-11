@@ -32,7 +32,7 @@
 
 O **Sistema JR** e uma plataforma web completa para gestao pessoal e empresarial, integrando:
 
-- **Gestao Financeira** — contas bancarias, transacoes, cartoes de credito, investimentos, importacao OFX
+- **Gestao Financeira** — contas bancarias, transacoes, cartoes de credito, investimentos, comparacao de periodos, importacao OFX
 - **CRM de Vendas** — pipeline Kanban, contatos, negocios, produtos, timeline de atividades
 - **WhatsApp Business** — integracao com Evolution API para gerenciar conversas, enviar/receber mensagens em tempo real, templates e campanhas em massa
 - **Agenda e Tarefas** — calendario com eventos recorrentes e listas de tarefas com prioridades
@@ -125,6 +125,7 @@ jr/
 │   │   ├── Financeiro/
 │   │   │   ├── Cartoes.php
 │   │   │   ├── Categorias.php
+│   │   │   ├── Comparacao.php
 │   │   │   ├── Contas.php
 │   │   │   ├── Fatura.php
 │   │   │   ├── ImportarOfx.php
@@ -358,7 +359,29 @@ Painel central com visao geral de todos os modulos:
 - Grafico de distribuicao por tipo
 - Totalizadores: investido, atual, rendimento total
 
-#### 5.2.7 Importacao OFX
+#### 5.2.7 Comparacao Financeira
+
+**Rota:** `GET /financeiro/comparacao`
+**Componente:** `App\Livewire\Financeiro\Comparacao`
+
+Ferramenta para comparacao lado a lado de dois periodos (Periodo A vs Periodo B):
+
+- Navegacao por mes (botoes anterior/proximo) com suporte a **periodo personalizado** (selecao de datas)
+- Filtros independentes por periodo: Conta, Categoria e Tipo (receita/despesa/transferencia)
+- Botao "Copiar filtros" de A para B (e vice-versa)
+- **Atalhos rapidos (presets):**
+  - Mes anterior vs Atual
+  - Mesmo mes do ano passado
+  - Trimestre vs Trimestre
+  - Ano anterior vs Atual
+- Estatisticas por periodo: Receitas, Despesas, Saldo, Quantidade de transacoes
+- Top 5 categorias (com cor e valor)
+- Diferencas automaticas entre os periodos (valor absoluto + percentual)
+- Opcao de visualizar lista detalhada das transacoes (ultimas 50) de cada lado
+
+Ideal para analises mes a mes, ano a ano ou por trimestre.
+
+#### 5.2.8 Importacao OFX
 
 **Rota:** `GET /financeiro/importar-ofx`
 **Componente:** `App\Livewire\Financeiro\ImportarOfx`
@@ -372,7 +395,7 @@ Painel central com visao geral de todos os modulos:
 - Prevencao de duplicatas via FITID (identificador unico do banco)
 - Resumo pos-importacao (importados, ignorados, receitas, despesas)
 
-#### 5.2.8 Transferencias
+#### 5.2.9 Transferencias
 
 **Componente:** `App\Livewire\Financeiro\Transferencia`
 
@@ -893,6 +916,7 @@ Processa o envio de uma campanha em massa:
 | GET | `/financeiro/cartoes` | financeiro.cartoes | Financeiro\Cartoes |
 | GET | `/financeiro/cartoes/{id}/fatura` | financeiro.fatura | Financeiro\Fatura |
 | GET | `/financeiro/investimentos` | financeiro.investimentos | Financeiro\Investimentos |
+| GET | `/financeiro/comparacao` | financeiro.comparacao | Financeiro\Comparacao |
 | GET | `/financeiro/importar-ofx` | financeiro.importar-ofx | Financeiro\ImportarOfx |
 | GET | `/agenda` | agenda | Agenda\Calendario |
 | GET | `/tarefas` | tarefas | Tarefas\Index |
@@ -922,6 +946,7 @@ Menu
 ├── Categorias (financeiro.categorias)
 ├── Cartoes (financeiro.cartoes)
 ├── Investimentos (financeiro.investimentos)
+├── Comparacao (financeiro.comparacao)
 ├── Agenda (agenda)
 ├── Tarefas (tarefas)
 ├── Pipeline (crm.pipeline)

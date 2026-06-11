@@ -1,8 +1,10 @@
 # Plano de Desenvolvimento — Sistema JR
 
 > **Baseado em:** PRD-JR.md + design-system.md
-> **Stack:** Laravel 12 + Livewire 4/Volt + Tailwind CSS + PostgreSQL + Redis + Docker
+> **Stack:** Laravel 12 + Livewire 4/Volt + Tailwind CSS + MySQL (externo) + Redis + Docker
 > **Criado em:** 27/03/2026
+
+> **Nota (2026-06):** O projeto foi implementado com **MySQL** rodando externamente (via `host.docker.internal`). O `docker-compose.yml` final nao inclui servico de banco de dados (postgres foi planejado inicialmente mas removido).
 
 ---
 
@@ -12,9 +14,9 @@
 
 - [ ] Criar `docker/php/Dockerfile` (PHP 8.3-FPM com extensoes: pgsql, pdo_pgsql, redis, bcmath, gd, zip, intl)
 - [ ] Criar `docker/nginx/default.conf` (fastcgi_pass para o container app, root em /var/www/html/public)
-- [ ] Criar `docker-compose.yml` com 6 servicos: app, nginx (8080:80), postgres (16-alpine), redis (7-alpine), queue, scheduler
-- [ ] Configurar volumes persistentes para postgres_data
-- [ ] Criar `.env.example` com variaveis de conexao (DB_HOST=postgres, REDIS_HOST=redis, etc.)
+- [ ] Criar `docker-compose.yml` com 6 servicos: app, nginx (8080:80), redis, queue, scheduler, reverb
+- [ ] Configurar MySQL externo (acessado via host.docker.internal no .env)
+- [ ] Criar `.env.example` com variaveis de conexao (DB_CONNECTION=mysql, DB_HOST=host.docker.internal, REDIS_HOST=redis, etc.)
 - [ ] Subir containers e validar que todos os servicos estao rodando
 
 ### 1.2 Projeto Laravel
@@ -22,7 +24,7 @@
 - [ ] Criar projeto Laravel 12 via Composer (`composer create-project laravel/laravel .`)
 - [ ] Instalar dependencias: `livewire/livewire`, `livewire/volt`
 - [ ] Instalar Laravel Breeze para autenticacao simplificada
-- [ ] Configurar `.env` para PostgreSQL e Redis (cache, session, queue)
+- [ ] Configurar `.env` para MySQL e Redis (cache, session, queue)
 - [ ] Rodar `php artisan migrate` para validar conexao com o banco
 - [ ] Configurar Pest PHP como framework de testes
 

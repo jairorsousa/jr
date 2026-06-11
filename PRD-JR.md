@@ -3,8 +3,10 @@
 > **Produto:** JR — Sistema de Gestão Pessoal
 > **Autor:** Jairo Rodrigues
 > **Versão:** 1.0
-> **Data:** 27/03/2026
+> **Data:** 27/03/2026 (atualizado posteriormente)
 > **Status:** Em definição
+
+> **Nota:** O projeto foi implementado usando **MySQL** (banco externo via host.docker.internal) em vez de PostgreSQL. O `docker-compose.yml` atual não inclui container de banco de dados.
 
 ---
 
@@ -28,7 +30,7 @@ O **JR** é um sistema web pessoal para o Jairo Rodrigues gerenciar sua vida fin
 | **Backend** | PHP 8.3 + Laravel 12                                    |
 | **Frontend** | Livewire 4 + Volt (single-file components)              |
 | **Estilização** | Tailwind CSS + Design System (Arquivo design-system.md) |
-| **Banco de dados** | PostgreSQL 16                                           |
+| **Banco de dados** | MySQL 8+ (externo)                                      |
 | **Cache/Sessão** | Redis                                                   |
 | **Infraestrutura** | Docker + Docker Compose                                 |
 | **Servidor web** | Nginx                                                   |
@@ -42,7 +44,7 @@ O **JR** é um sistema web pessoal para o Jairo Rodrigues gerenciar sua vida fin
 |---------|--------|-------|
 | `app` | PHP 8.3-FPM (custom Dockerfile) | — |
 | `nginx` | nginx:alpine | `8080:80` |
-| `postgres` | postgres:16-alpine | `5432:5432` |
+| (sem container de banco — MySQL externo via host.docker.internal) | — | — |
 | `redis` | redis:7-alpine | `6379:6379` |
 | `queue` | Mesmo da app (artisan queue:work) | — |
 | `scheduler` | Mesmo da app (artisan schedule:work) | — |
@@ -415,7 +417,6 @@ services:
     volumes:
       - .:/var/www/html
     depends_on:
-      - postgres
       - redis
     networks:
       - jr-network
@@ -432,18 +433,8 @@ services:
     networks:
       - jr-network
 
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: jr_db
-      POSTGRES_USER: jr_user
-      POSTGRES_PASSWORD: jr_secret
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - jr-network
+  # Banco de dados MySQL roda externamente (host.docker.internal)
+  # Nao ha servico de banco neste compose
 
   redis:
     image: redis:7-alpine
@@ -478,8 +469,6 @@ services:
       - jr-network
 
 volumes:
-  postgres_data:
-
 networks:
   jr-network:
     driver: bridge
