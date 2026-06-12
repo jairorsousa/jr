@@ -181,7 +181,12 @@ class Index extends Component
         ];
 
         if ($this->editingId) {
-            app(BetTransactionService::class)->update(BetTransaction::findOrFail($this->editingId), $data, $financeAccountId);
+            app(BetTransactionService::class)->update(
+                BetTransaction::findOrFail($this->editingId),
+                $data,
+                $financeAccountId,
+                $this->create_finance_transaction,
+            );
             session()->flash('success', 'Transacao de bet atualizada com sucesso.');
         } else {
             app(BetTransactionService::class)->create($data, $financeAccountId);

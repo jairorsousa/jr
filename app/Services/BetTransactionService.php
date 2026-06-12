@@ -29,12 +29,10 @@ class BetTransactionService
         });
     }
 
-    public function update(BetTransaction $transaction, array $data, ?string $financeAccountId = null): BetTransaction
+    public function update(BetTransaction $transaction, array $data, ?string $financeAccountId = null, bool $syncFinance = true): BetTransaction
     {
-        return DB::transaction(function () use ($transaction, $data, $financeAccountId) {
+        return DB::transaction(function () use ($transaction, $data, $financeAccountId, $syncFinance) {
             $oldAccountId = $transaction->bet_account_id;
-            $wasConfirmed = $transaction->isConfirmed();
-
             if (($data['status'] ?? null) === BetTransactionStatus::Confirmed->value && !$transaction->confirmed_at) {
                 $data['confirmed_at'] = now();
             }
@@ -54,15 +52,19 @@ class BetTransactionService
                 }
             }
 
-            if ($transaction->isConfirmed()) {
+            if ($transaction->isConfirmed() && $syncFinance && $transaction->type->affectsFinance()) {
                 app(BetFinanceIntegrationService::class)->sync($transaction, $financeAccountId);
             }
 
-            if ($wasConfirmed && !$transaction->isConfirmed() && $transaction->financeTransaction) {
-                $financeAccount = $transaction->financeTransaction->account;
-                $transaction->financeTransaction->delete();
-                $transaction->forceFill(['finance_transaction_id' => null])->saveQuietly();
-                app(BalanceService::class)->recalculate($financeAccount);
+            if (
+                $transaction->financeTransaction
+                && (
+                    !$transaction->isConfirmed()
+                    || !$syncFinance
+                    || !$transaction->type->affectsFinance()
+                )
+            ) {
+                $this->unlinkFinanceTransaction($transaction);
             }
 
             return $transaction->fresh();
@@ -109,5 +111,23 @@ class BetTransactionService
     public function typeOptions(): array
     {
         return BetTransactionType::cases();
+    }
+
+    private function unlinkFinanceTransaction(BetTransaction $transaction): void
+    {
+        $financeTransaction = $transaction->financeTransaction;
+
+        if (!$financeTransaction) {
+            return;
+        }
+
+        $financeAccount = $financeTransaction->account;
+
+        $financeTransaction->delete();
+        $transaction->forceFill(['finance_transaction_id' => null])->saveQuietly();
+
+        if ($financeAccount) {
+            app(BalanceService::class)->recalculate($financeAccount);
+        }
     }
 }

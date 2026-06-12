@@ -108,6 +108,39 @@ class BetTransactionServiceTest extends TestCase
         ]);
     }
 
+    public function test_update_can_unlink_finance_transaction_when_checkbox_is_unchecked(): void
+    {
+        $financeAccount = $this->createFinanceAccount(initialBalance: 1000);
+        $betAccount = $this->createBetAccount(initialBalance: 0);
+
+        $betTransaction = app(BetTransactionService::class)->create([
+            'bet_account_id' => $betAccount->id,
+            'type' => BetTransactionType::Deposit->value,
+            'status' => BetTransactionStatus::Confirmed->value,
+            'amount' => 250,
+            'occurred_at' => '2026-06-01 10:00:00',
+            'description' => 'Deposito Betano',
+        ], $financeAccount->id);
+
+        $this->assertNotNull($betTransaction->fresh()->finance_transaction_id);
+        $this->assertSame('750.00', $financeAccount->fresh()->current_balance);
+        $this->assertSame(1, Transaction::count());
+
+        app(BetTransactionService::class)->update($betTransaction->fresh(), [
+            'bet_account_id' => $betAccount->id,
+            'type' => BetTransactionType::Deposit->value,
+            'status' => BetTransactionStatus::Confirmed->value,
+            'amount' => 250,
+            'occurred_at' => '2026-06-01 10:00:00',
+            'description' => 'Deposito Betano',
+        ], null, false);
+
+        $this->assertNull($betTransaction->fresh()->finance_transaction_id);
+        $this->assertSame('1000.00', $financeAccount->fresh()->current_balance);
+        $this->assertSame(0, Transaction::count());
+        $this->assertSame('250.00', $betAccount->fresh()->current_balance);
+    }
+
     private function createBetAccount(float $initialBalance): BetAccount
     {
         $house = BettingHouse::create([
