@@ -79,6 +79,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('transactions');
     });
 
+    // Cripto
+    Route::prefix('cripto')->name('crypto.')->group(function () {
+        Route::get('/', function () {
+            return view('crypto.dashboard');
+        })->name('dashboard');
+
+        Route::get('/instituicoes', function () {
+            return view('crypto.institutions.index');
+        })->name('institutions');
+
+        Route::get('/contas', function () {
+            return view('crypto.accounts.index');
+        })->name('accounts');
+
+        Route::get('/transacoes', function () {
+            return view('crypto.transactions.index');
+        })->name('transactions');
+    });
+
     // Tarefas
     Route::get('/tarefas', function () {
         return view('tarefas.index');

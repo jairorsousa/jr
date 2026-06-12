@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\BetTransactionStatus;
 use App\Enums\BetTransactionType;
+use App\Enums\BetSettlementMethod;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,8 @@ class BetTransaction extends Model
     protected $fillable = [
         'bet_account_id',
         'finance_transaction_id',
+        'settlement_method',
+        'crypto_transaction_id',
         'type',
         'status',
         'amount',
@@ -40,6 +43,7 @@ class BetTransaction extends Model
         return [
             'type' => BetTransactionType::class,
             'status' => BetTransactionStatus::class,
+            'settlement_method' => BetSettlementMethod::class,
             'amount' => 'decimal:2',
             'balance_before' => 'decimal:2',
             'balance_after' => 'decimal:2',
@@ -59,6 +63,11 @@ class BetTransaction extends Model
     public function financeTransaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class, 'finance_transaction_id');
+    }
+
+    public function cryptoTransaction(): BelongsTo
+    {
+        return $this->belongsTo(CryptoTransaction::class, 'crypto_transaction_id');
     }
 
     public function isConfirmed(): bool

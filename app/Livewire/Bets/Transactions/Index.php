@@ -2,11 +2,15 @@
 
 namespace App\Livewire\Bets\Transactions;
 
+use App\Enums\BetSettlementMethod;
 use App\Enums\BetTransactionStatus;
 use App\Enums\BetTransactionType;
 use App\Models\Account;
 use App\Models\BetAccount;
 use App\Models\BetTransaction;
+use App\Models\CryptoAccount;
+use App\Models\CryptoAsset;
+use App\Models\CryptoNetwork;
 use App\Services\BetTransactionService;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -45,8 +49,19 @@ class Index extends Component
     public string $strategy = '';
     public string $notes = '';
     public bool $create_finance_transaction = true;
+    public string $settlement_method = 'bank';
     public string $finance_account_id = '';
     public string $confirm_finance_account_id = '';
+    public string $crypto_account_id = '';
+    public string $crypto_asset_id = '';
+    public string $crypto_network_id = '';
+    public string $crypto_amount = '';
+    public string $exchange_rate_brl = '';
+    public string $fee_brl = '';
+    public string $fee_crypto_amount = '';
+    public string $tx_hash = '';
+    public string $from_address = '';
+    public string $to_address = '';
 
     protected $queryString = [
         'currentMonth' => ['except' => ''],
@@ -84,7 +99,18 @@ class Index extends Component
             'odd' => 'nullable|numeric|min:0',
             'strategy' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:2000',
+            'settlement_method' => 'required|string|in:' . implode(',', array_column(BetSettlementMethod::cases(), 'value')),
             'finance_account_id' => 'nullable|uuid|exists:accounts,id',
+            'crypto_account_id' => 'nullable|uuid|exists:crypto_accounts,id',
+            'crypto_asset_id' => 'nullable|uuid|exists:crypto_assets,id',
+            'crypto_network_id' => 'nullable|uuid|exists:crypto_networks,id',
+            'crypto_amount' => 'nullable|numeric|min:0',
+            'exchange_rate_brl' => 'nullable|numeric|min:0',
+            'fee_brl' => 'nullable|numeric|min:0',
+            'fee_crypto_amount' => 'nullable|numeric|min:0',
+            'tx_hash' => 'nullable|string|max:255',
+            'from_address' => 'nullable|string|max:255',
+            'to_address' => 'nullable|string|max:255',
         ];
     }
 
@@ -125,7 +151,8 @@ class Index extends Component
         $this->type = $type ?: 'deposit';
         $this->status = 'confirmed';
         $this->occurred_at = now()->format('Y-m-d\TH:i');
-        $this->create_finance_transaction = true;
+        $this->settlement_method = $this->typeSupportsSettlement() ? BetSettlementMethod::Bank->value : BetSettlementMethod::Manual->value;
+        $this->create_finance_transaction = $this->settlement_method === BetSettlementMethod::Bank->value;
         $this->showModal = true;
     }
 
@@ -147,7 +174,19 @@ class Index extends Component
         $this->strategy = $transaction->strategy ?? '';
         $this->notes = $transaction->notes ?? '';
         $this->create_finance_transaction = (bool) $transaction->finance_transaction_id;
+        $this->settlement_method = $transaction->settlement_method?->value
+            ?? ($transaction->finance_transaction_id ? BetSettlementMethod::Bank->value : BetSettlementMethod::Manual->value);
         $this->finance_account_id = $transaction->financeTransaction?->account_id ?? '';
+        $this->crypto_account_id = $transaction->cryptoTransaction?->crypto_account_id ?? '';
+        $this->crypto_asset_id = $transaction->cryptoTransaction?->crypto_asset_id ?? '';
+        $this->crypto_network_id = $transaction->cryptoTransaction?->crypto_network_id ?? '';
+        $this->crypto_amount = (string) ($transaction->cryptoTransaction?->crypto_amount ?? '');
+        $this->exchange_rate_brl = (string) ($transaction->cryptoTransaction?->exchange_rate_brl ?? '');
+        $this->fee_brl = (string) ($transaction->cryptoTransaction?->fee_brl ?? '');
+        $this->fee_crypto_amount = (string) ($transaction->cryptoTransaction?->fee_crypto_amount ?? '');
+        $this->tx_hash = $transaction->cryptoTransaction?->tx_hash ?? '';
+        $this->from_address = $transaction->cryptoTransaction?->from_address ?? '';
+        $this->to_address = $transaction->cryptoTransaction?->to_address ?? '';
         $this->showModal = true;
     }
 
@@ -157,10 +196,27 @@ class Index extends Component
 
         $type = BetTransactionType::from($this->type);
         $status = BetTransactionStatus::from($this->status);
-        $financeAccountId = $this->create_finance_transaction ? $this->finance_account_id : null;
+        $settlementMethod = $type->affectsFinance()
+            ? BetSettlementMethod::from($this->settlement_method)
+            : BetSettlementMethod::Manual;
+        $financeAccountId = $settlementMethod === BetSettlementMethod::Bank ? $this->finance_account_id : null;
+        $cryptoData = $settlementMethod === BetSettlementMethod::Crypto ? $this->cryptoPayload() : null;
 
-        if ($this->create_finance_transaction && $status === BetTransactionStatus::Confirmed && $type->affectsFinance() && !$financeAccountId) {
+        if ($settlementMethod === BetSettlementMethod::Bank && $status === BetTransactionStatus::Confirmed && !$financeAccountId) {
             $this->addError('finance_account_id', 'Selecione a conta financeira para vincular deposito/saque.');
+            return;
+        }
+
+        if ($settlementMethod === BetSettlementMethod::Crypto && (!$this->crypto_account_id || !$this->crypto_asset_id || !$this->crypto_network_id)) {
+            if (!$this->crypto_account_id) {
+                $this->addError('crypto_account_id', 'Selecione a conta ou carteira cripto.');
+            }
+            if (!$this->crypto_asset_id) {
+                $this->addError('crypto_asset_id', 'Selecione a moeda usada.');
+            }
+            if (!$this->crypto_network_id) {
+                $this->addError('crypto_network_id', 'Selecione a rede usada.');
+            }
             return;
         }
 
@@ -168,6 +224,7 @@ class Index extends Component
             'bet_account_id' => $this->bet_account_id,
             'type' => $this->type,
             'status' => $this->status,
+            'settlement_method' => $settlementMethod->value,
             'amount' => (float) $this->amount,
             'occurred_at' => Carbon::parse($this->occurred_at),
             'description' => $this->description,
@@ -185,11 +242,12 @@ class Index extends Component
                 BetTransaction::findOrFail($this->editingId),
                 $data,
                 $financeAccountId,
-                $this->create_finance_transaction,
+                $settlementMethod === BetSettlementMethod::Bank,
+                $cryptoData,
             );
             session()->flash('success', 'Transacao de bet atualizada com sucesso.');
         } else {
-            app(BetTransactionService::class)->create($data, $financeAccountId);
+            app(BetTransactionService::class)->create($data, $financeAccountId, $cryptoData);
             session()->flash('success', 'Transacao de bet criada com sucesso.');
         }
 
@@ -201,7 +259,11 @@ class Index extends Component
     {
         $transaction = BetTransaction::findOrFail($id);
 
-        if ($transaction->type->affectsFinance() && !$transaction->finance_transaction_id) {
+        if (
+            $transaction->type->affectsFinance()
+            && $transaction->settlement_method !== BetSettlementMethod::Crypto
+            && !$transaction->finance_transaction_id
+        ) {
             $this->confirmingId = $id;
             $this->confirm_finance_account_id = '';
             $this->showConfirmModal = true;
@@ -265,18 +327,56 @@ class Index extends Component
             'strategy',
             'notes',
             'finance_account_id',
+            'crypto_account_id',
+            'crypto_asset_id',
+            'crypto_network_id',
+            'crypto_amount',
+            'exchange_rate_brl',
+            'fee_brl',
+            'fee_crypto_amount',
+            'tx_hash',
+            'from_address',
+            'to_address',
         ]);
         $this->type = 'deposit';
         $this->status = 'confirmed';
+        $this->settlement_method = BetSettlementMethod::Bank->value;
         $this->create_finance_transaction = true;
         $this->resetValidation();
+    }
+
+    public function updatedType(): void
+    {
+        if (!$this->typeSupportsSettlement()) {
+            $this->settlement_method = BetSettlementMethod::Manual->value;
+            $this->create_finance_transaction = false;
+            return;
+        }
+
+        if ($this->settlement_method === BetSettlementMethod::Manual->value) {
+            $this->settlement_method = BetSettlementMethod::Bank->value;
+        }
+
+        $this->create_finance_transaction = $this->settlement_method === BetSettlementMethod::Bank->value;
+    }
+
+    public function updatedSettlementMethod(): void
+    {
+        $this->create_finance_transaction = $this->settlement_method === BetSettlementMethod::Bank->value;
     }
 
     private function getFilteredQuery()
     {
         $ref = Carbon::parse($this->currentMonth . '-01');
 
-        return BetTransaction::with(['betAccount.bettingHouse', 'betAccount.betUser', 'financeTransaction.account'])
+        return BetTransaction::with([
+                'betAccount.bettingHouse',
+                'betAccount.betUser',
+                'financeTransaction.account',
+                'cryptoTransaction.cryptoAccount.institution',
+                'cryptoTransaction.asset',
+                'cryptoTransaction.network',
+            ])
             ->whereBetween('occurred_at', [$ref->copy()->startOfMonth(), $ref->copy()->endOfMonth()])
             ->when($this->search, fn ($query) => $query->where('description', 'like', "%{$this->search}%"))
             ->when($this->filterAccount, fn ($query) => $query->where('bet_account_id', $this->filterAccount))
@@ -298,10 +398,14 @@ class Index extends Component
         $transactions = $query->orderByDesc('occurred_at')->paginate(20);
         $betAccounts = BetAccount::with(['bettingHouse', 'betUser'])->where('is_active', true)->orderBy('name')->get();
         $financeAccounts = Account::where('is_active', true)->orderBy('name')->get();
+        $cryptoAccounts = CryptoAccount::with(['institution', 'betUser'])->where('is_active', true)->orderBy('name')->get();
+        $cryptoAssets = CryptoAsset::where('is_active', true)->orderBy('symbol')->get();
+        $cryptoNetworks = CryptoNetwork::where('is_active', true)->orderBy('name')->get();
         $houses = \App\Models\BettingHouse::where('is_active', true)->orderBy('name')->get();
         $users = \App\Models\BetUser::where('is_active', true)->orderBy('name')->get();
         $types = BetTransactionType::cases();
         $statuses = BetTransactionStatus::cases();
+        $settlementMethods = BetSettlementMethod::cases();
         $ref = Carbon::parse($this->currentMonth . '-01');
         $monthLabel = ucfirst($ref->translatedFormat('F Y'));
         $isCurrentMonth = $this->currentMonth === now()->format('Y-m');
@@ -312,10 +416,14 @@ class Index extends Component
             'transactions',
             'betAccounts',
             'financeAccounts',
+            'cryptoAccounts',
+            'cryptoAssets',
+            'cryptoNetworks',
             'houses',
             'users',
             'types',
             'statuses',
+            'settlementMethods',
             'inTotal',
             'outTotal',
             'stake',
@@ -325,5 +433,27 @@ class Index extends Component
             'monthLabel',
             'isCurrentMonth',
         ));
+    }
+
+    private function typeSupportsSettlement(): bool
+    {
+        return BetTransactionType::tryFrom($this->type)?->affectsFinance() ?? false;
+    }
+
+    private function cryptoPayload(): array
+    {
+        return [
+            'crypto_account_id' => $this->crypto_account_id,
+            'crypto_asset_id' => $this->crypto_asset_id ?: null,
+            'crypto_network_id' => $this->crypto_network_id ?: null,
+            'crypto_amount' => $this->crypto_amount !== '' ? (float) $this->crypto_amount : null,
+            'exchange_rate_brl' => $this->exchange_rate_brl !== '' ? (float) $this->exchange_rate_brl : null,
+            'fee_brl' => $this->fee_brl !== '' ? (float) $this->fee_brl : 0,
+            'fee_crypto_amount' => $this->fee_crypto_amount !== '' ? (float) $this->fee_crypto_amount : null,
+            'tx_hash' => $this->tx_hash ?: null,
+            'from_address' => $this->from_address ?: null,
+            'to_address' => $this->to_address ?: null,
+            'notes' => $this->notes ?: null,
+        ];
     }
 }
