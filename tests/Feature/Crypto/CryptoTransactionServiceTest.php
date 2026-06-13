@@ -19,9 +19,11 @@ use App\Models\CryptoInstitution;
 use App\Models\CryptoNetwork;
 use App\Models\CryptoTransaction;
 use App\Models\Transaction;
+use App\Livewire\Crypto\Transactions\Index as CryptoTransactionsIndex;
 use App\Services\BetTransactionService;
 use App\Services\CryptoTransactionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CryptoTransactionServiceTest extends TestCase
@@ -67,6 +69,60 @@ class CryptoTransactionServiceTest extends TestCase
 
         $this->assertSame('350.00', $cryptoAccount->fresh()->current_balance_brl);
         $this->assertSame(0, Transaction::count());
+    }
+
+    public function test_crypto_screen_send_to_bet_creates_bet_deposit_transaction(): void
+    {
+        $cryptoAccount = $this->createCryptoAccount(initialBalance: 500);
+        $betAccount = $this->createBetAccount(initialBalance: 0);
+
+        Livewire::test(CryptoTransactionsIndex::class)
+            ->set('crypto_account_id', $cryptoAccount->id)
+            ->set('bet_account_id', $betAccount->id)
+            ->set('type', CryptoTransactionType::SendToBet->value)
+            ->set('status', CryptoTransactionStatus::Confirmed->value)
+            ->set('amount_brl', '150')
+            ->set('occurred_at', '2026-06-01T10:00')
+            ->set('description', 'Envio cripto para Betano')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('bet_transactions', [
+            'bet_account_id' => $betAccount->id,
+            'type' => BetTransactionType::Deposit->value,
+            'status' => BetTransactionStatus::Confirmed->value,
+            'amount' => 150,
+        ]);
+        $this->assertSame('150.00', $betAccount->fresh()->current_balance);
+        $this->assertSame('350.00', $cryptoAccount->fresh()->current_balance_brl);
+        $this->assertNotNull($betAccount->transactions()->first()?->crypto_transaction_id);
+    }
+
+    public function test_crypto_screen_receive_from_bet_creates_bet_withdrawal_transaction(): void
+    {
+        $cryptoAccount = $this->createCryptoAccount(initialBalance: 100);
+        $betAccount = $this->createBetAccount(initialBalance: 300);
+
+        Livewire::test(CryptoTransactionsIndex::class)
+            ->set('crypto_account_id', $cryptoAccount->id)
+            ->set('bet_account_id', $betAccount->id)
+            ->set('type', CryptoTransactionType::ReceiveFromBet->value)
+            ->set('status', CryptoTransactionStatus::Confirmed->value)
+            ->set('amount_brl', '120')
+            ->set('occurred_at', '2026-06-01T10:00')
+            ->set('description', 'Recebimento cripto da Betano')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('bet_transactions', [
+            'bet_account_id' => $betAccount->id,
+            'type' => BetTransactionType::Withdrawal->value,
+            'status' => BetTransactionStatus::Confirmed->value,
+            'amount' => 120,
+        ]);
+        $this->assertSame('180.00', $betAccount->fresh()->current_balance);
+        $this->assertSame('220.00', $cryptoAccount->fresh()->current_balance_brl);
+        $this->assertNotNull($betAccount->transactions()->first()?->crypto_transaction_id);
     }
 
     public function test_transfer_between_crypto_accounts_creates_linked_outgoing_and_incoming_transactions(): void
