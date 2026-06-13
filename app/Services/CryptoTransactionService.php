@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\CryptoTransactionStatus;
+use App\Enums\CryptoTransactionType;
 use App\Models\CryptoAccount;
 use App\Models\CryptoTransaction;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,71 @@ class CryptoTransactionService
         });
     }
 
+    public function createTransfer(array $data, string $targetCryptoAccountId): CryptoTransaction
+    {
+        return DB::transaction(function () use ($data, $targetCryptoAccountId) {
+            $sourceAccount = CryptoAccount::findOrFail($data['crypto_account_id']);
+            $targetAccount = CryptoAccount::findOrFail($targetCryptoAccountId);
+            $description = $data['description'];
+
+            $sourceTransaction = $this->create(array_merge($data, [
+                'type' => CryptoTransactionType::SendToWallet->value,
+                'description' => "Transferencia para {$targetAccount->name} - {$description}",
+            ]));
+
+            $targetTransaction = $this->create(array_merge($data, [
+                'crypto_account_id' => $targetCryptoAccountId,
+                'type' => CryptoTransactionType::ReceiveFromWallet->value,
+                'fee_brl' => 0,
+                'fee_crypto_amount' => null,
+                'description' => "Transferencia de {$sourceAccount->name} - {$description}",
+            ]));
+
+            $sourceTransaction->forceFill(['related_crypto_transaction_id' => $targetTransaction->id])->saveQuietly();
+            $targetTransaction->forceFill(['related_crypto_transaction_id' => $sourceTransaction->id])->saveQuietly();
+
+            return $sourceTransaction->fresh();
+        });
+    }
+
+    public function updateTransfer(CryptoTransaction $transaction, array $data, string $targetCryptoAccountId): CryptoTransaction
+    {
+        return DB::transaction(function () use ($transaction, $data, $targetCryptoAccountId) {
+            $sourceTransaction = $transaction->type === CryptoTransactionType::ReceiveFromWallet && $transaction->relatedTransaction
+                ? $transaction->relatedTransaction
+                : $transaction;
+
+            $sourceAccount = CryptoAccount::findOrFail($data['crypto_account_id']);
+            $targetAccount = CryptoAccount::findOrFail($targetCryptoAccountId);
+            $targetTransaction = $sourceTransaction->relatedTransaction;
+            $description = $data['description'];
+
+            $sourceTransaction = $this->update($sourceTransaction, array_merge($data, [
+                'type' => CryptoTransactionType::SendToWallet->value,
+                'description' => "Transferencia para {$targetAccount->name} - {$description}",
+            ]), null, false);
+
+            $targetData = array_merge($data, [
+                'crypto_account_id' => $targetCryptoAccountId,
+                'type' => CryptoTransactionType::ReceiveFromWallet->value,
+                'fee_brl' => 0,
+                'fee_crypto_amount' => null,
+                'description' => "Transferencia de {$sourceAccount->name} - {$description}",
+            ]);
+
+            if ($targetTransaction) {
+                $targetTransaction = $this->update($targetTransaction, $targetData, null, false);
+            } else {
+                $targetTransaction = $this->create($targetData);
+            }
+
+            $sourceTransaction->forceFill(['related_crypto_transaction_id' => $targetTransaction->id])->saveQuietly();
+            $targetTransaction->forceFill(['related_crypto_transaction_id' => $sourceTransaction->id])->saveQuietly();
+
+            return $sourceTransaction->fresh();
+        });
+    }
+
     public function confirm(CryptoTransaction $transaction, ?string $financeAccountId = null): void
     {
         $this->update($transaction, [
@@ -87,18 +153,23 @@ class CryptoTransactionService
         ]);
     }
 
-    public function delete(CryptoTransaction $transaction): void
+    public function delete(CryptoTransaction $transaction, bool $deleteRelated = true): void
     {
-        DB::transaction(function () use ($transaction) {
+        DB::transaction(function () use ($transaction, $deleteRelated) {
             $cryptoAccount = $transaction->cryptoAccount;
             $financeTransaction = $transaction->financeTransaction;
             $financeAccount = $financeTransaction?->account;
+            $relatedTransaction = $transaction->relatedTransaction;
 
             if ($transaction->betTransaction) {
                 $transaction->betTransaction->forceFill([
                     'crypto_transaction_id' => null,
                     'settlement_method' => 'manual',
                 ])->saveQuietly();
+            }
+
+            if ($relatedTransaction && $deleteRelated) {
+                $this->delete($relatedTransaction, false);
             }
 
             $transaction->delete();

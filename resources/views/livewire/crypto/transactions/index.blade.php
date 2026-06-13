@@ -31,6 +31,10 @@
                 <span class="material-icons-outlined text-[16px]">north_east</span>
                 Resgate
             </x-jr.button>
+            <x-jr.button wire:click="openCreateModal('send_to_wallet')" variant="mono" size="sm">
+                <span class="material-icons-outlined text-[16px]">sync_alt</span>
+                Transferencia
+            </x-jr.button>
             <x-jr.button wire:click="openCreateModal('send_to_bet')" variant="mono" size="sm">
                 <span class="material-icons-outlined text-[16px]">sports_soccer</span>
                 Envio Bet
@@ -117,7 +121,13 @@
                         @if($transaction->financeTransaction)
                             <p class="text-xs text-mono-600">Financeiro: {{ $transaction->financeTransaction->account?->name }}</p>
                         @elseif($transaction->betTransaction)
-                            <p class="text-xs text-mono-600">Bet: {{ $transaction->betTransaction->betAccount?->bettingHouse?->name }}</p>
+                            <p class="text-xs text-mono-600">
+                                Bet: {{ $transaction->betTransaction->betAccount?->name }}
+                            </p>
+                        @elseif($transaction->relatedTransaction)
+                            <p class="text-xs text-mono-600">
+                                Transferencia: {{ $transaction->relatedTransaction->cryptoAccount?->name }}
+                            </p>
                         @elseif($transaction->tx_hash)
                             <p class="text-xs text-mono-600 truncate max-w-[260px]">Hash: {{ $transaction->tx_hash }}</p>
                         @endif
@@ -190,7 +200,7 @@
                         <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-mono-600 mb-1.5">Conta/carteira cripto</label>
+                                    <label class="block text-sm font-medium text-mono-600 mb-1.5">{{ $selectedType === \App\Enums\CryptoTransactionType::SendToWallet ? 'Conta origem' : 'Conta/carteira cripto' }}</label>
                                     <select wire:model="crypto_account_id" class="w-full bg-mono-white border border-mono-200 rounded-pill px-4 h-12 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">
                                         <option value="">Selecione...</option>
                                         @foreach($cryptoAccounts as $account)
@@ -207,6 +217,30 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                @if($selectedType === \App\Enums\CryptoTransactionType::SendToWallet)
+                                    <div>
+                                        <label class="block text-sm font-medium text-mono-600 mb-1.5">Conta destino</label>
+                                        <select wire:model="target_crypto_account_id" class="w-full bg-mono-white border border-mono-200 rounded-pill px-4 h-12 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">
+                                            <option value="">Selecione...</option>
+                                            @foreach($cryptoAccounts as $account)
+                                                <option value="{{ $account->id }}">{{ $account->name }} · {{ $account->institution?->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('target_crypto_account_id') <p class="text-xs font-medium text-error mt-1.5 pl-4">{{ $message }}</p> @enderror
+                                    </div>
+                                @endif
+                                @if($selectedType?->affectsBet())
+                                    <div>
+                                        <label class="block text-sm font-medium text-mono-600 mb-1.5">Conta Bet vinculada</label>
+                                        <select wire:model="bet_account_id" class="w-full bg-mono-white border border-mono-200 rounded-pill px-4 h-12 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">
+                                            <option value="">Selecione...</option>
+                                            @foreach($betAccounts as $account)
+                                                <option value="{{ $account->id }}">{{ $account->name }} · {{ $account->bettingHouse?->name }} · {{ $account->betUser?->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('bet_account_id') <p class="text-xs font-medium text-error mt-1.5 pl-4">{{ $message }}</p> @enderror
+                                    </div>
+                                @endif
                                 <div>
                                     <label class="block text-sm font-medium text-mono-600 mb-1.5">Status</label>
                                     <select wire:model.live="status" class="w-full bg-mono-white border border-mono-200 rounded-pill px-4 h-12 text-sm text-mono-900 focus:border-primary-500 focus:ring-0">

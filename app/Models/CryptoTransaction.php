@@ -17,6 +17,7 @@ class CryptoTransaction extends Model
         'crypto_account_id',
         'finance_transaction_id',
         'bet_transaction_id',
+        'related_crypto_transaction_id',
         'crypto_asset_id',
         'crypto_network_id',
         'type',
@@ -69,6 +70,11 @@ class CryptoTransaction extends Model
     public function betTransaction(): BelongsTo
     {
         return $this->belongsTo(BetTransaction::class);
+    }
+
+    public function relatedTransaction(): BelongsTo
+    {
+        return $this->belongsTo(CryptoTransaction::class, 'related_crypto_transaction_id');
     }
 
     public function asset(): BelongsTo

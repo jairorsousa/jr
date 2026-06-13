@@ -69,6 +69,41 @@ class CryptoTransactionServiceTest extends TestCase
         $this->assertSame(0, Transaction::count());
     }
 
+    public function test_transfer_between_crypto_accounts_creates_linked_outgoing_and_incoming_transactions(): void
+    {
+        [$asset, $network] = $this->createAssetAndNetwork();
+        $sourceAccount = $this->createCryptoAccount(initialBalance: 1000, name: 'CoinEx Usuario A');
+        $targetAccount = $this->createCryptoAccount(initialBalance: 200, name: 'CoinEx Usuario B');
+
+        $sourceTransaction = app(CryptoTransactionService::class)->createTransfer([
+            'crypto_account_id' => $sourceAccount->id,
+            'crypto_asset_id' => $asset->id,
+            'crypto_network_id' => $network->id,
+            'type' => CryptoTransactionType::SendToWallet->value,
+            'status' => CryptoTransactionStatus::Confirmed->value,
+            'amount_brl' => 250,
+            'crypto_amount' => 50,
+            'exchange_rate_brl' => 5,
+            'fee_brl' => 10,
+            'occurred_at' => '2026-06-01 10:00:00',
+            'description' => 'Movimento entre usuarios',
+        ], $targetAccount->id);
+
+        $targetTransaction = $sourceTransaction->fresh()->relatedTransaction;
+
+        $this->assertSame(CryptoTransactionType::SendToWallet, $sourceTransaction->fresh()->type);
+        $this->assertSame(CryptoTransactionType::ReceiveFromWallet, $targetTransaction->type);
+        $this->assertSame($sourceTransaction->id, $targetTransaction->related_crypto_transaction_id);
+        $this->assertSame('740.00', $sourceAccount->fresh()->current_balance_brl);
+        $this->assertSame('450.00', $targetAccount->fresh()->current_balance_brl);
+
+        app(CryptoTransactionService::class)->delete($sourceTransaction->fresh());
+
+        $this->assertSame(0, CryptoTransaction::count());
+        $this->assertSame('1000.00', $sourceAccount->fresh()->current_balance_brl);
+        $this->assertSame('200.00', $targetAccount->fresh()->current_balance_brl);
+    }
+
     public function test_bet_deposit_can_be_settled_with_crypto_and_then_unlinked(): void
     {
         [$asset, $network] = $this->createAssetAndNetwork();
@@ -195,18 +230,20 @@ class CryptoTransactionServiceTest extends TestCase
         ]);
     }
 
-    private function createCryptoAccount(float $initialBalance): CryptoAccount
+    private function createCryptoAccount(float $initialBalance, string $name = 'Binance Jairo'): CryptoAccount
     {
-        $institution = CryptoInstitution::create([
-            'name' => 'Binance',
-            'slug' => 'binance',
-            'type' => 'exchange',
-            'color' => '#F0B90B',
-        ]);
+        $institution = CryptoInstitution::firstOrCreate(
+            ['slug' => 'coinex'],
+            [
+                'name' => 'CoinEx',
+                'type' => 'exchange',
+                'color' => '#15a96f',
+            ],
+        );
 
         return CryptoAccount::create([
             'crypto_institution_id' => $institution->id,
-            'name' => 'Binance Jairo',
+            'name' => $name,
             'custody_type' => 'exchange',
             'initial_balance_brl' => $initialBalance,
             'current_balance_brl' => $initialBalance,
