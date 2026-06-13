@@ -124,7 +124,7 @@ class BetTransactionService
 
     public function typeOptions(): array
     {
-        return BetTransactionType::cases();
+        return BetTransactionType::selectableCases();
     }
 
     private function unlinkFinanceTransaction(BetTransaction $transaction): void

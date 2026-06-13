@@ -87,7 +87,7 @@ class Index extends Component
     {
         return [
             'bet_account_id' => 'required|uuid|exists:bet_accounts,id',
-            'type' => 'required|string|in:' . implode(',', array_column(BetTransactionType::cases(), 'value')),
+            'type' => 'required|string|in:' . implode(',', array_column(BetTransactionType::selectableCases(), 'value')),
             'status' => 'required|string|in:' . implode(',', array_column(BetTransactionStatus::cases(), 'value')),
             'amount' => 'required|numeric|min:0.01',
             'occurred_at' => 'required|date',
@@ -403,7 +403,7 @@ class Index extends Component
         $cryptoNetworks = CryptoNetwork::where('is_active', true)->orderBy('name')->get();
         $houses = \App\Models\BettingHouse::where('is_active', true)->orderBy('name')->get();
         $users = \App\Models\BetUser::where('is_active', true)->orderBy('name')->get();
-        $types = BetTransactionType::cases();
+        $types = BetTransactionType::selectableCases();
         $statuses = BetTransactionStatus::cases();
         $settlementMethods = BetSettlementMethod::cases();
         $ref = Carbon::parse($this->currentMonth . '-01');

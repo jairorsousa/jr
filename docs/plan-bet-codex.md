@@ -335,7 +335,6 @@ Valores de entrada:
 deposit
 bet_payout
 bonus_credit
-bonus_release
 cashback
 adjustment_credit
 transfer_in
@@ -347,7 +346,6 @@ Valores de saida:
 withdrawal
 bet_stake
 fee
-bonus_expired
 adjustment_debit
 transfer_out
 ```
@@ -732,14 +730,13 @@ lucro_periodo = entradas_operacionais - saidas_operacionais
 
 entradas_operacionais =
     bet_payout
-    + bonus_release
+    + bonus_credit
     + cashback
     + adjustment_credit
 
 saidas_operacionais =
     bet_stake
     + fee
-    + bonus_expired
     + adjustment_debit
 
 roi_periodo =
@@ -888,4 +885,3 @@ Para comecar rapido e com boa base, eu faria o MVP assim:
 7. Dashboard simples.
 
 Eu deixaria apostas individuais para a segunda fase. Isso evita modelar esporte/mercado/odd antes da hora e entrega logo o controle que mais importa: onde esta o dinheiro e qual foi o resultado.
-
